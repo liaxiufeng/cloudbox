@@ -7,8 +7,10 @@
                     <slot>这是主体部分</slot>
                 </div>
                 <div class="formActionBox">
-                    <button type="submit" class="btn btn-primary">{{confirmText}}</button>
-                    <button type="button" class="btn btn-success" @click="confirmCancel">{{cancelText}}</button>
+                    <slot name="action">
+                        <button type="submit" class="btn btn-primary">{{confirmText}}</button>
+                        <button type="button" class="btn btn-success" @click="confirmCancel">{{cancelText}}</button>
+                    </slot>
                 </div>
             </form>
         </div>
@@ -21,11 +23,11 @@
         methods: {
             confirmSubmit() {
                 this.$emit('input', false);
-                this.$emit('submit')
+                this.$emit('submit');
             },
             confirmCancel() {
                 this.$emit('input', false);
-                this.$emit('cancel')
+                this.$emit('cancel');
             }
         },
         props: {

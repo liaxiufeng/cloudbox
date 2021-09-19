@@ -1,10 +1,10 @@
 <template>
-    <div id="alertBox" v-show="value">
+    <div class="alertBox" v-show="value">
         <div id="alertContent" class="alert text-white" :class="typeClass">
             <div class="iq-alert-icon" v-show="iconShow">
                 <i :class="iconClass"></i>
             </div>
-            <div class="iq-alert-text" id="msgBox">
+            <div class="iq-alert-text msgBox">
                 <slot>{{msg}}</slot>
             </div>
             <button v-show="closeBtn" @click="$emit('input', false)" type="button" class="close">
@@ -89,7 +89,7 @@
 </script>
 
 <style scoped>
-    #alertBox {
+    .alertBox {
         width: 100vw;
         position: fixed;
         z-index: 1000;
@@ -99,12 +99,9 @@
         justify-content: center;
     }
 
-    #alertContent {
-
-    }
-
-    #msgBox {
+    .msgBox {
         max-width: 50vw;
+        overflow: auto;
         display: flex;
         flex-wrap: wrap;
         margin-right: 20px;

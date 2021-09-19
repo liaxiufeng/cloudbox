@@ -9,6 +9,24 @@
             darkClass() {
                 return this.$store.state.isDark ? 'dark' : 'white';
             }
+        },
+        provide(){
+            return{
+                reload:this.reload
+            }
+        },
+        data(){
+            return{
+                isRouterAlive:true
+            }
+        },
+        methods:{
+            reload(){
+                this.isRouterAlive = false;
+                this.$nextTick(()=>{
+                    this.isRouterAlive = true;
+                });
+            }
         }
     }
 </script>

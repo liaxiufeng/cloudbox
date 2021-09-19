@@ -1,43 +1,102 @@
 <template>
     <div class="content-page">
+        <loading v-show="loading"/>
         <alert-message v-model="alertMsg.show" v-bind="alertMsg"/>
-        <confirm-message v-model="confirmTip.show" :title="confirmTip.title" @submit="confirmTip.then">
-            <div id="selectsContent">
-                <a href="#" v-for="(file,index) in fileData" v-if="select.selects[index]">{{file.name}}</a>
+        <confirm-message v-model="newFileForm.show" @submit="finishFileName"
+                         :title="newFileForm.isFolder ? '请输入文件夹名。':'请输入文件名。'">
+            <div class="row" id="newFileBox">
+                <div class="col-lg-12">
+                    <div class="floating-label form-group">
+                        <input class="floating-input form-control fileNameInput"
+                               type="text" :placeholder="newFileForm.isFolder ? '请输入文件夹名':'请输入文件名'"
+                               v-model="newFileForm.name" required>
+                    </div>
+                </div>
             </div>
         </confirm-message>
-        <confirm-message v-model="newFile.show" @submit="finishFileName"
-                         :title="newFile.isFolder ? '请输入文件夹名。':'请输入文件名。'">
+        <confirm-message v-model="reNameForm.show" @submit="reNameFile(reNameForm.file)"
+                         title="更改文件名">
             <div class="row">
                 <div class="col-lg-12">
                     <div class="floating-label form-group">
-                        <input class="floating-input form-control" id="fileNameInput"
-                               type="text" :placeholder="newFile.isFolder ? '请输入文件夹名':'请输入文件名'"
-                               v-model="newFile.name" required>
+                        <input class="floating-input form-control fileNameInput"
+                               type="text" placeholder="请输入新文件名"
+                               v-model="reNameForm.file.name" required>
                     </div>
+                </div>
+            </div>
+        </confirm-message>
+        <confirm-message v-model="moveFilesForm.show" @submit="pasteFiles(moveFilesForm.files)"
+                         :title="moveFilesForm.title">
+            <div>
+                <div>原路径: <a href="#">{{moveFilesForm.location || 'Home'}}</a></div>
+                <div>文件名:</div>
+                <div>
+                    <div v-for="file in moveFilesForm.files" class="text-green">
+                        <a href="#" @click.prevent="loadFile(file,moveFilesForm)">{{file.name}}</a>
+                    </div>
+                </div>
+            </div>
+        </confirm-message>
+        <confirm-message v-model="moveFilesConflictForm.show" :title="moveFilesConflictForm.title">
+            <slot>
+                <div>
+                    <div v-for="file in moveFilesConflictForm.conflict" class="text-green">
+                        <a href="#" @click.prevent="loadFile(file,moveFilesConflictForm)">{{file.name}}</a>
+                    </div>
+                </div>
+            </slot>
+            <slot slot="action">
+                <button type="button" class="btn btn-primary" @click="pasteFilesConflict(true)">覆盖</button>
+                <button type="button" class="btn btn-primary" @click="pasteFilesConflict(false)">忽略</button>
+                <button type="button" class="btn btn-success" @click="cancelPaste">取消</button>
+            </slot>
+        </confirm-message>
+        <confirm-message v-model="deleteFilesForm.show"
+                         @submit="deleteFiles(deleteFilesForm.files)"
+                         :title="deleteFilesForm.title">
+            <div v-for="file in deleteFilesForm.files">{{file.name}}</div>
+        </confirm-message>
+        <confirm-message v-model="resultFilesForm.show"
+                         :title="resultFilesForm.title">
+            <div>
+                <div>
+                    <div v-for="file in resultFilesForm.fail">{{file.name}}</div>
                 </div>
             </div>
         </confirm-message>
         <div id="menu" v-show="menu.menuVisible" x-placement="bottom-end"
              class="dropdown-menu dropdown-menu-right show menuBox" aria-labelledby="dropdownMenuButton2"
              style="position: absolute; will-change: transform; top: 0; left: 300px; transform: translate3d(-140px, 24px, 0px);">
-            <a class="dropdown-item" href="#" v-show="select.selectSome" @click="downloadFiles(null)">
-                <i class="fas fa-cloud-download-alt mr-2"></i>下载
-            </a>
             <a class="dropdown-item" href="#" v-show="select.selectOne" @click="openFile(null)">
                 <i class="ri-eye-fill mr-2"></i>打开
             </a>
             <a class="dropdown-item" href="#" v-show="select.selectOne" @click="editFile(null)">
                 <i class="ri-pencil-fill mr-2"></i>编辑
             </a>
+            <a class="dropdown-item" href="#" v-show="select.selectSome" @click="downloadFiles(null)">
+                <i class="fas fa-cloud-download-alt mr-2"></i>下载
+            </a>
+            <a class="dropdown-item" href="#" @click="freshData">
+                <i class="las la-spinner mr-2"></i>刷新
+            </a>
             <a class="dropdown-item" href="#" v-show="select.selectOne" @click="reNameFile(null)">
                 <i class="las la-brush mr-2"></i>重命名
             </a>
+            <a class="dropdown-item" href="#" v-show="select.selectSome" @click="cutFiles">
+                <i class="fas fa-cut mr-2"></i>剪切
+            </a>
+            <a class="dropdown-item" href="#" v-show="select.selectSome" @click="copyFiles">
+                <i class="fas fa-copy mr-2"></i>复制
+            </a>
+            <a class="dropdown-item" href="#" v-show="haveCopyFiles" @click="pasteFiles">
+                <i class="fas fa-paste mr-2"></i>粘贴
+            </a>
+            <!--            <a class="dropdown-item" href="#" v-show="select.selectSome" @click="removeFiles(null)">-->
+            <!--                <i class="ri-delete-bin-6-line mr-2"></i>移入回收站-->
+            <!--            </a>-->
             <a class="dropdown-item" href="#" v-show="select.selectSome" @click="deleteFiles(null)">
                 <i class="ri-delete-bin-6-fill mr-2"></i>删除
-            </a>
-            <a class="dropdown-item" href="#">
-                <i class="las la-spinner mr-2"></i>刷新
             </a>
             <a class="dropdown-item" href="#" @click.stop.prevent="initFileName(false)">
                 <i class="la-plus las mr-2"></i>新建文件
@@ -57,17 +116,19 @@
                             <nav aria-label="breadcrumb">
                                 <ol class="breadcrumb">
                                     <li class="breadcrumb-item">
-                                        <a href="#">
+                                        <a href="#"
+                                           @click.prevent="$route.path === '/myDrive/0' ? 0 :$router.push('/myDrive/0')">
                                             <i class="ri-home-4-line mr-1 float-left"></i>
                                             Home
                                         </a>
                                     </li>
-                                    <li class="breadcrumb-item" v-for="(path,index) in locationPath"
-                                        v-if="(index < locationPath.length - 1) && path.length">
-                                        <a href="#">{{path}}</a>
+                                    <li class="breadcrumb-item" v-for="(path,index) in locationFiles"
+                                        v-if="(index < locationFiles.length - 1) && path">
+                                        <a href="#"
+                                           @click.prevent="$router.push('/myDrive/'+path.fid)">{{path.name}}</a>
                                     </li>
-                                    <li class="breadcrumb-item active" aria-current="page">
-                                        {{locationPath[locationPath.length - 1]}}
+                                    <li class="breadcrumb-item active" aria-current="page" v-if="locationFiles.length">
+                                        {{locationFiles[locationFiles.length - 1].name}}
                                     </li>
                                 </ol>
                             </nav>
@@ -101,8 +162,8 @@
                                 </div>
                             </div>
                             <button type="button" class="mt-2 btn btn-primary center" @click="showGrid = !showGrid">
-                                <i :class="showGrid?'ri-layout-grid-line':'ri-list-check'" class="font-size-20"></i>
-                                {{showGrid?'表格视图':'列表视图'}}
+                                <i :class="showGrid?'ri-list-check':'ri-layout-grid-line'" class="font-size-20"></i>
+                                {{showGrid?'列表视图':'表格视图'}}
                             </button>
                         </div>
                     </div>
@@ -114,19 +175,21 @@
                      @contextmenu.prevent.stop="menuShow(false)">
                     <div class="col-lg-1 col-md-2 col-sm-2" v-for="(file,index) in fileData">
                         <div :class="{'active':select.selects[index]}" class="fileBox"
-                             @click="changeSelect(index)" @contextmenu.prevent.stop="menuShow(true,file,index)">
+                             @click="changeSelect(index)" @contextmenu.prevent.stop="menuShow(true,file,index)"
+                             @dblclick.prevent.stop="openFile(file)"
+                        >
                             <div>
                                 <img :src="require('@/assets/images/layouts/file_type/'+switchIconSuffix(file)+'.png')"
                                      class="img-fluid mb-1" alt="images"/>
                             </div>
                             <input type="text" class="fileName dropdown-toggle search-query text search-input"
-                                   v-model="file.name" @click.stop/>
+                                   v-model="file.name" @change.lazy="reNameFile(file)" @click.stop @dblclick.stop/>
                         </div>
                     </div>
                 </div>
             </div>
             <div :class="{'icon-grid':showGrid }" class="icon i-list">
-                <div class="row" @contextmenu.prevent.stop="menuShow(false)">
+                <div class="row" @contextmenu.prevent.stop="menuShow(false)" style="min-height: 60vh;">
                     <div class="col-lg-12">
                         <div class="card card-block card-stretch card-height">
                             <div class="card-body">
@@ -154,7 +217,9 @@
                                         <tr v-for="(file,index) in fileData"
                                             :class="{'active':select.selects[index]}"
                                             @click="changeSelect(index)"
-                                            @contextmenu.prevent.stop="menuShow(true,file,index)">
+                                            @contextmenu.prevent.stop="menuShow(true,file,index)"
+                                            @dblclick.prevent.stop="openFile(file)"
+                                        >
                                             <td>
                                                 <input type="checkbox" v-model="select.selects[index]"/>
                                             </td>
@@ -165,7 +230,9 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <input type="text" class="fileName" v-model="file.name" @click.stop>
+                                                <input type="text" class="fileName" v-model="file.name"
+                                                       @change.prevent.lazy="reNameFile(file)"
+                                                       @click.stop @dblclick.stop>
                                             </td>
                                             <td>{{file.lastUpdateDate}}</td>
                                             <td>{{file.size}}</td>
@@ -189,7 +256,7 @@
                                                     </button>
                                                     <button type="button"
                                                             class="btn btn-outline-danger rounded-small mt-2"
-                                                            @click="deleteFiles(file)">
+                                                            @click="deleteFiles([file])">
                                                         <i class="ri-delete-bin-6-fill mr-1"></i>
                                                     </button>
                                                 </div>
@@ -210,10 +277,12 @@
 <script>
     import AlertMessage from "../msg/AlertMessage";
     import ConfirmMessage from "../msg/ConfirmMessage";
+    import Loading from "../msg/Loading";
+    import {request} from "../../network/netWork";
 
     export default {
         name: "FileView",
-        components: {ConfirmMessage, AlertMessage},
+        components: {Loading, ConfirmMessage, AlertMessage},
         data() {
             return {
                 typeOrderRule: ["pptx", "pdf", "docx", "xlsx", "txt", "gif", "png", "jpg", "jpeg", "webp", "cur", "ico"],
@@ -228,16 +297,13 @@
                     selectSome: false,
                     lastSelect: null,
                 },
-                address: "",
-                locationPath: [],
-                fileData: [],
+                locationSplit: [],
                 keyActions: [
                     {
                         isCtrl: true,
                         isShift: false,
                         isAlt: false,
-                        // ctrl + a 65
-                        code: 65,
+                        key: "a",
                         then: _this => {
                             _this.ChangeEverySelect.call(_this, !_this.select.selectAll);
                         }
@@ -245,30 +311,86 @@
                         isCtrl: true,
                         isShift: false,
                         isAlt: false,
-                        // ctrl + v 86
-                        code: 86,
+                        key: "v",
                         then: _this => {
-                            console.log("粘贴上传");
+                            _this.pasteFiles();
+                        }
+                    }, {
+                        isCtrl: true,
+                        isShift: false,
+                        isAlt: false,
+                        key: "x",
+                        then: _this => {
+                            _this.cutFiles();
+                        }
+                    }, {
+                        isCtrl: true,
+                        isShift: false,
+                        isAlt: false,
+                        key: "c",
+                        then: _this => {
+                            _this.copyFiles();
+                        }
+                    }, {
+                        isCtrl: false,
+                        isShift: false,
+                        isAlt: false,
+                        key: "Delete",
+                        then: _this => {
+                            _this.removeFiles(null);
+                        }
+                    }, {
+                        isCtrl: false,
+                        isShift: true,
+                        isAlt: false,
+                        key: "Delete",
+                        then: _this => {
+                            _this.removeFiles(null);
                         }
                     }
+
                 ],
-                newFile: {
+                newFileForm: {
                     isFolder: null,
                     name: null,
                     show: null
                 },
-                upLoad: {
+                reNameForm: {
+                    show: false,
+                    file: {
+                        name: null
+                    }
+                },
+                moveFilesForm: {
+                    show: false,
+                    isCopy: true,
+                    title: "",
+                    location: "",
+                    files: []
+                },
+                moveFilesConflictForm: {
+                    show: false,
+                    conflict: [],
+                    title: ""
+                },
+                deleteFilesForm: {
+                    show: false,
+                    title: "",
+                    files: []
+                },
+                resultFilesForm: {
+                    show: false,
+                    title: "",
+                    success: [],
+                    fail: []
+                },
+                upLoadForm: {
                     show: false,
                     files: null,
                     isOne: null
                 },
-                downLoad: {
+                downLoadForm: {
                     show: false
-                },
-                confirmTip: {
-                    show: false,
-                    title: '标题',
-                    then: () => console.log("确认")
                 },
                 alertMsg: {
                     show: false,
@@ -279,88 +401,14 @@
                 }
             }
         },
+        computed: {
+            haveCopyFiles() {
+                const files = this.$store.state.moveFiles.files;
+                return files && files.length;
+            }
+        },
         methods: {
-            //获取数据
-            getFileData() {
-                var temp = {
-                    address: "/workspace/ssm_crud",
-                    fileData: [
-                        {
-                            fid: '1',
-                            name: "src",
-                            isFolder: true,
-                            isHeart: true,
-                            isLock: false,
-                            size: "789kb",
-                            lastUpdateDate: "2020-9-13 12:23:09"
-                        }, {
-                            fid: '2',
-                            name: "webApp",
-                            isFolder: true,
-                            isHeart: false,
-                            isLock: false,
-                            size: "678kb",
-                            lastUpdateDate: "2020-9-12 12:23:09"
-                        }, {
-                            fid: '2',
-                            name: "empty",
-                            isFolder: true,
-                            isHeart: false,
-                            size: "0kb",
-                            lastUpdateDate: "2020-9-12 12:23:09"
-                        }, {
-                            fid: '3',
-                            name: "readMe.md",
-                            isFolder: false,
-                            size: "20kb",
-                            lastUpdateDate: "2020-9-15 12:23:09"
-                        }, {
-                            fid: '4',
-                            name: "演示文档.pptx",
-                            isFolder: false,
-                            size: "20kb",
-                            lastUpdateDate: "2020-9-15 12:22:09"
-                        }, {
-                            fid: '5',
-                            name: "数据表格.xlsx",
-                            isFolder: false,
-                            size: "20kb",
-                            lastUpdateDate: "2020-9-9 12:23:09"
-                        }, {
-                            fid: '6',
-                            name: "数据结构电子版.pdf",
-                            isFolder: false,
-                            size: "20kb",
-                            lastUpdateDate: "2021-7-10 12:23:09"
-                        }, {
-                            fid: '7',
-                            name: "算法与程序设计实现.docx",
-                            isFolder: false,
-                            size: "20kb",
-                            lastUpdateDate: "2021-7-10 12:12:09"
-                        }
-                    ]
-                };
-                var addressTemp = temp.address;
-                temp.locationPath = addressTemp.split("/");
-                return temp;
-            },
-            orderFn() {
-                return {
-                    nameRule(obj) {
-                        return obj;
-                    },
-                    typeRule(obj) {
-                        return obj;
-                    },
-                    dateRule(obj) {
-                        return obj;
-                    },
-                    defaultRule(obj) {
-                        return obj;
-                    }
-                }
-            },
+            //根据文件后缀名返回类型
             switchIconSuffix(file) {
                 //识别文件夹
                 if (file.isFolder) {
@@ -430,7 +478,7 @@
             },
             //选中或取消选中
             selectAllClickFn() {
-                this.$set(this.select, "selectAll", !this.select.selectAll)
+                this.$set(this.select, "selectAll", !this.select.selectAll);
                 this.ChangeEverySelect(this.select.selectAll);
             },
             //改变下标对应文件的选中状态
@@ -465,7 +513,7 @@
                     this.$set(this.select.selects, i, flag);
                 }
             },
-            //左键菜单显示
+            //右键菜单显示
             menuShow(isFileClick, file, index) {
                 //如果文件或文件夹未选中，改变选中状态
                 if (isFileClick) {
@@ -476,7 +524,7 @@
                 // 显示模态窗口，跳出自定义菜单栏
                 this.menu.menuVisible = true;
                 //根据菜单和屏幕的大小，元素的位置，进行定位
-                var menu = document.querySelector('#menu');
+                const menu = document.querySelector('#menu');
 
                 let width = menu.offsetWidth;
                 let height = menu.offsetHeight;
@@ -488,96 +536,318 @@
                 // 给整个document添加监听鼠标事件，点击任何位置执行foo方法
                 document.addEventListener('click', this.menHideByBlur);
             },
-            //左键菜单隐藏
+            //右键菜单隐藏
             menHideByBlur() { // 取消鼠标监听事件 菜单栏
                 this.menu.menuVisible = false;
                 document.removeEventListener('click', this.menHideByBlur);
                 // 要及时关掉监听，不关掉的是一个坑，不信你试试，虽然前台显示的时候没有啥毛病，加一个alert你就知道了
             },
-            //绑定快捷键函数
-            keyActionInit() {
-                const _this = this;
-                document.onkeydown = e => {
-                    const code = e.keyCode;
-                    _this.keyActions.forEach(item => {
-                        item.code === code &&
-                        (!item.isCtrl || e.ctrlKey) &&
-                        (!item.isShift || e.shiftKey) &&
-                        (!item.isAlt || e.altKey) && item.then(_this);
-                    });
-                }
-            },
             //创建文件时输入文件名
             initFileName(isFolder) {
-                this.newFile.show = true;
-                this.newFile.isFolder = isFolder;
+                this.newFileForm.show = true;
+                this.newFileForm.isFolder = isFolder;
                 this.menu.menuVisible = false;
-                document.getElementById("fileNameInput").focus();
+                document.querySelector("#newFileBox .fileNameInput:first-child").focus();
             },
             //文件名输入完成
             finishFileName() {
-                console.log(this.newFile.isFolder ? "新建文件夹" : "新建文件", this.newFile.name);
-                this.newFile.show = false;
+                console.log(this.newFileForm.isFolder ? "新建文件夹" : "新建文件", this.newFileForm.name);
+                this.newFileForm.show = false;
             },
-            activeFile(fileParam) {
-                let file = fileParam || null;
-                if (!file) {
-                    this.fileData.forEach((item, index) => {
-                        if (this.select.selects[index]) file = item;
-                    });
-                }
+            //获取选中的单个文件
+            activeFile() {
+                let file;
+                this.fileData.forEach((item, index) => {
+                    if (this.select.selects[index]) file = item;
+                });
                 return file;
             },
-            activeFiles(fileParam) {
+            //获取选中的多个文件
+            activeFiles() {
                 let files = [];
-                if (fileParam) {
-                    files.push(fileParam)
-                } else {
-                    this.fileData.forEach((item, index) => {
-                        this.select.selects[index] && files.push(item)
-                    });
-                }
+                this.fileData.forEach((item, index) => {
+                    this.select.selects[index] && files.push(item)
+                });
                 return files;
             },
+            //获取选中的多个文件的id
+            activeFids() {
+                let fids = [];
+                this.fileData.forEach((item, index) => {
+                    this.select.selects[index] && fids.push(item.fid)
+                });
+                return fids;
+            },
+            //file数组转化为fid数组
+            filesToFids(fileParam) {
+                let fids = [];
+                fileParam.forEach(item => {
+                    fids.push(item.fid);
+                });
+                return fids;
+            },
             //删除文件
-            deleteFiles(fileParam) {
-                console.log("删除", this.activeFiles(fileParam));
+            deleteFiles(files) {
+                if (files) {
+                    const data = this.filesToFids(files);
+                    const url = "file/delete";
+                    request({
+                        url, data, method: 'delete',
+                    }).then(res => {
+                        if (res.status === 200) {
+                            const success = res.data.success;
+                            const fail = res.data.fail;
+                            if (fail && fail.length) {
+                                this.resultFilesForm.fail = fail;
+                                this.resultFilesForm.success = success;
+                                this.resultFilesForm.title = "下面这" + fail.length + "文件删除失败！";
+                                this.resultFilesForm.show = true;
+                            } else {
+                                this.showMsg("成功从删除" + success.length + "个文件！", 2000, "success");
+                                this.freshData();
+                            }
+                        } else {
+                            this.showMsg("删除文件请求失败!", 2000, "error");
+                        }
+                    })
+                } else {
+                    if (this.select.selectSome) {
+                        const files = this.activeFiles();
+                        this.deleteFilesForm.files = files;
+                        this.deleteFilesForm.title = "确认删除这" + files.length + "个文件?";
+                        this.deleteFilesForm.show = true;
+                    } else {
+                        this.showMsg("请先选择任何文件!", 2000, "error");
+                    }
+                }
             },
             //重命名文件
             reNameFile(fileParam) {
-                console.log("重命名", this.activeFile(fileParam));
+                if (fileParam) {
+                    request({
+                        url: "file/rename",
+                        method: "put",
+                        params: {
+                            fid: fileParam.fid,
+                            newName: fileParam.name
+                        }
+                    }).then(res => {
+                        if (res.status === 200) {
+                            this.showMsg(res.msg, 2000, "success");
+                        } else {
+                            this.showMsg(res.msg, 2000, "error");
+                            this.freshData();
+                        }
+                    });
+                } else {
+                    if (this.select.selectOne) {
+                        this.reNameForm.file = this.activeFile();
+                        this.reNameForm.show = true;
+                    } else if (this.select.selectSome) {
+                        this.showMsg("无法同时给多个文件重命名!", 2000, "error");
+                    } else {
+                        this.showMsg("还未选中任何文件!", 2000, "error");
+                    }
+                }
             },
             //编辑文件
             editFile(fileParam) {
-                console.log("编辑", this.activeFile(fileParam));
+                if (fileParam) {
+                    console.log("编辑", fileParam);
+                } else {
+                    if (this.selectOne) {
+                        this.editFile(this.activeFile());
+                    } else if (this.selectSome) {
+                        this.showMsg("请先选择一个文件!", 2000, "error");
+                    } else {
+                        this.showMsg("不能同时编辑多个文件!", 2000, "error");
+                    }
+                }
             },
             //打开文件
             openFile(fileParam) {
-                console.log("打开", this.activeFile(fileParam));
+                if (fileParam) {
+                    if (fileParam.isFolder) {
+                        this.$router.push('/myDrive/' + fileParam.fid);
+                    } else {
+
+                    }
+                } else {
+                    if (this.selectOne) {
+                        this.editFile(this.activeFile());
+                    } else if (this.selectSome) {
+                        this.showMsg("请先选择一个文件!", 2000, "error");
+                    } else {
+                        this.showMsg("不能同时打开多个文件!", 2000, "error");
+                    }
+                }
             },
             //下载文件
             downloadFiles(fileParam) {
-                console.log("下载文件", this.activeFiles(fileParam));
-            }
-        },
-        created() {
-            let Data = this.orderFn().defaultRule(this.getFileData());
-            this.address = Data.address;
-            this.locationPath = Data.locationPath;
-            this.fileData = Data.fileData;
-
-            for (let i = 0; i < this.fileData.length; i++) {
-                this.select.selects[i] = false;
-            }
-            //阻止页面被选中
-            document.querySelectorAll(":not(input)").forEach((item, index) => {
-                item.onselectstart = function () {
-                    return false;
+                console.log("下载文件", this.activeFiles());
+            },
+            //复制文件
+            copyFiles() {
+                const files = this.activeFiles();
+                this.$store.commit("setCopyFiles", {files, location: this.location});
+                this.showMsg(files.length + "个文件已准备复制", 2000, "success");
+            },
+            //剪切文件
+            cutFiles() {
+                const files = this.activeFiles();
+                this.$store.commit("setCutFiles", {files, location: this.location});
+                this.showMsg(files.length + "个文件已准备剪切", 2000, "success");
+            },
+            //粘贴文件
+            pasteFiles(files) {
+                if (files && files.length) {
+                    const isCopy = this.$store.state.moveFiles.isCopy;
+                    const url = "file/move";
+                    let data = this.filesToFids(this.$store.state.moveFiles.files);
+                    const dest = this.$route.params.fid || 0;
+                    request({
+                        url,
+                        method: "post",
+                        params: {
+                            dest, isCopy
+                        },
+                        data
+                    }).then(res => {
+                        if (res.status === 200) {
+                            const fail = res.data.fail;
+                            const success = res.data.success;
+                            if (fail.length === 0) {
+                                this.showMsg("成功" + (isCopy ? "复制" : "剪切") + success.length + "个文件", 4000, "success");
+                                this.freshData();
+                            } else {
+                                this.resultFilesForm.success = success;
+                                this.resultFilesForm.fail = fail;
+                                this.resultFilesForm.show = true;
+                                this.freshData();
+                            }
+                        } else if (res.status === 300) {
+                            const conflict = res.data;
+                            this.moveFilesConflictForm.title = "以下" + conflict.length + "个文件已经存在，你希望怎么做？";
+                            this.moveFilesConflictForm.conflict = conflict;
+                            this.moveFilesConflictForm.show = true;
+                        } else {
+                            this.showMsg(res.msg, 4000, "error");
+                            this.freshData();
+                        }
+                    });
+                } else {
+                    const location = this.$store.state.moveFiles.location;
+                    const copyFiles = this.$store.state.moveFiles.files;
+                    const isCopy = this.$store.state.moveFiles.isCopy;
+                    if (copyFiles && copyFiles.length) {
+                        if (location === this.location) {
+                            this.showMsg("无法在本路径下复制这些文件", 2000, "error");
+                            return;
+                        }
+                        this.moveFilesForm.files = copyFiles;
+                        this.moveFilesForm.isCopy = isCopy;
+                        this.moveFilesForm.title = (isCopy ? "确认复制" : "确认剪切") + copyFiles.length + "个文件?";
+                        this.moveFilesForm.location = location;
+                        this.moveFilesForm.show = true;
+                    } else {
+                        this.showMsg("暂无粘贴文件!", 2000, "error");
+                    }
                 }
-            });
+            },
+            //当复制存在冲突时，用户选择忽略，覆盖或者取消复制
+            pasteFilesConflict(override) {
+                const isCopy = this.$store.state.moveFiles.isCopy;
+                const dest = this.$route.params.fid || 0;
+                let data = this.filesToFids(this.$store.state.moveFiles.files);
+                request({
+                    url: "file/move/conflict",
+                    method: "post",
+                    params: {
+                        dest, isCopy, override
+                    },
+                    data
+                }).then(res => {
+                    this.moveFilesConflictForm.show = false;
+                    const success = res.data.success;
+                    const fail = res.data.fail;
+                    const actionStr = isCopy ? "复制" : "剪切";
+                    if (fail.length) {
+                        const title = success.length + "个文件" + actionStr + "成功," + "以下" + fail.length + "个文件" + actionStr + "失败";
+                        this.resultFilesForm.success = success;
+                        this.resultFilesForm.fail = fail;
+                        this.resultFilesForm.title = title;
+                        this.resultFilesForm.show = true;
+                    } else {
+                        this.showMsg("成功" + actionStr + success.length + "个文件！", 4000, "success");
+                    }
+                    if (success.length) {
+                        this.freshData();
+                    }
+                });
+            },
+            //取消复制
+            cancelPaste() {
+                this.moveFilesConflictForm.show = false;
+            },
+            //上传文件
+            uploadFile(fileParam) {
+
+            },
+            //上传多个文件
+            uploadFiles(fileParam) {
+
+            },
+            initLocationPath() {
+                this.locationSplit = this.location.split("/");
+            },
+            initSelect() {
+                this.select.selects = [];
+                for (let i = 0; i < this.fileData.length; i++) {
+                    this.select.selects[i] = false;
+                }
+            },
+            //绑定快捷键函数
+            initKeyAction() {
+                const _this = this;
+                document.onkeydown = e => {
+                    // console.log(e);
+                    const key = e.key;
+                    _this.keyActions.forEach(item => {
+                        item.key === key &&
+                        (!item.isCtrl || e.ctrlKey) &&
+                        (!item.isShift || e.shiftKey) &&
+                        (!item.isAlt || e.altKey) &&
+                        item.then(_this);
+                    });
+                }
+            },
+            initFn() {
+                this.initLocationPath();
+                this.initSelect();
+                this.initKeyAction();
+            },
+            showMsg(msg, showTime, type) {
+                this.alertMsg.show = false;
+                this.alertMsg.msg = msg;
+                this.alertMsg.showTime = showTime;
+                this.alertMsg.type = type;
+                this.alertMsg.show = true;
+            },
+            freshData() {
+                this.$emit("fresh");
+            },
+            loadFile(file, form) {
+                if (file.isFolder) {
+                    this.$router.push("/myDrive/" + file.fid);
+                }
+                form.show = false;
+            }
         },
         mounted() {
-            this.keyActionInit();
+            //阻止页面被选中
+            document.querySelectorAll(":not(input)").forEach(item => {
+                item.onselectstart = () => false
+            });
         },
         watch: {
             select: {
@@ -590,6 +860,31 @@
                     this.$set(this.select, "selectOne", count === 1);
                     this.$set(this.select, "selectSome", count > 0);
                 }, deep: true
+            },
+            loading: {
+                handler(val) {
+                    if (!val) {
+                        this.initFn();
+                    }
+                }
+            }
+        },
+        props: {
+            locationFiles: {
+                type: Array,
+                default: []
+            },
+            fileData: {
+                type: Array,
+                default: []
+            },
+            location: {
+                type: String,
+                default: ""
+            },
+            loading: {
+                type: Boolean,
+                default: true
             }
         }
     }
@@ -640,6 +935,11 @@
         padding: 50px;
         min-height: 60vh;
     }
+
+    .list_grid_body {
+        min-height: 60vh;
+    }
+
 
     .fileBox {
         padding: 10px;

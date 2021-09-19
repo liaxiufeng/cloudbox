@@ -113,7 +113,6 @@
                 } else {
                     this.showError("用户名不能为空！");
                 }
-
             },
             checkEmail() {
                 if (!/^([a-zA-Z]|[0-9])(\w|\-)+@\w+\.[a-zA-Z]{2,4}$/.test(this.user.email)) {
@@ -153,7 +152,9 @@
                         } else {
                             this.showError(res.msg);
                         }
-                    }).catch(toPage500);
+                    }).catch(e=>{
+                        console.log(e);
+                    });
                 }
             },
             showError(msg) {

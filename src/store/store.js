@@ -8,7 +8,12 @@ Vue.use(Vuex);
 //创建对象
 const state = {
     token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
-    isDark: false
+    isDark: false,
+    moveFiles: {
+        files: [],
+        isCopy: false,
+        location: ""
+    }
 };
 const getters = {};
 

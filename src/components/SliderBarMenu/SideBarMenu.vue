@@ -58,7 +58,7 @@
                                 <i class="las la-angle-down iq-arrow-right arrow-hover" v-if="link.hasChild"></i>
                             </a>
                             <ul v-if="link.hasChild" class="iq-submenu collapse" :class="{'show':isOpen(link)}">
-                                <li :class="{'active':sonIsActive(son)}" v-for="son in link.children">
+                                <li :class="{'active':isActive(son)}" v-for="son in link.children">
                                     <a href="#" @click.stop.prevent="linkClick(son)">
                                         <i :class="son.icon"/>
                                         <span>{{son.text}}</span>
@@ -111,7 +111,10 @@
                     }, {
                         icon: "las la-hdd",
                         text: "我的硬盘",
-                        path: "/myDrive",
+                        path: {
+                            match:/\/myDrive\/\d+/,
+                            to:"/myDrive"
+                        },
                         hasChild: true,
                         children: [
                             {
@@ -174,32 +177,47 @@
         },
         methods: {
             isActive(link) {
-                let flag = false;
-                let temp = this.$route.path;
-                if (link.path === temp) flag = true;
-                link.children.forEach((item) => {
-                    if (item.path === temp) flag = true;
-                });
-                return flag;
+                if (this.isActiveHandler(link)) return true;
+                if(link.hasChild){
+                    let flag = false;
+                    link.children.forEach((item) => {
+                        if (this.isActiveHandler(item)) flag = true;
+                    });
+                    return flag;
+                }
+                return false;
+            },
+            isActiveHandler(link) {
+                let routePath = this.$route.path;
+                if (link.path instanceof Object){
+                    return link.path.match.test(routePath);
+                }else{
+                    return link.path === routePath;
+                }
             },
             isOpen(link) {
-                let flag = false;
-                let temp = this.$route.path;
-                if (link.path === temp) flag = true;
-                link.children.forEach((item) => {
-                    if (item.path === temp) {
-                        flag = true;
-                        this.openAble = true;
-                    }
-                });
-                return flag && this.openAble;
-            },
-            sonIsActive(son) {
-                return son.path === this.$route.path;
+                if (this.isActiveHandler(link)) return this.openAble;
+                if (link.hasChild){
+                    let flag = false;
+                    link.children.forEach((item) => {
+                        if (this.isActiveHandler(item)) {
+                            flag = true;
+                            this.openAble = true;
+                        }
+                    });
+                    return flag && this.openAble;
+                }
+                return false;
             },
             linkClick(link) {
-                if (link.path !== this.$route.path) {
-                    this.$router.push(link.path).then(()=>{
+                if (!this.isActiveHandler(link)) {
+                    let toPath = "";
+                    if (link.path instanceof Object){
+                        toPath = link.path.to;
+                    }else{
+                        toPath = link.path;
+                    }
+                    this.$router.push(toPath).then(()=>{
                         this.openAble = true;
                     });
                 }else if (link.hasChild) {

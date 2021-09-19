@@ -1,5 +1,6 @@
 <template>
     <div class="wrapper">
+        <alert-message v-model="alertMsg.show" v-bind="alertMsg"/>
         <section class="login-content">
             <div class="container h-100">
                 <div class="row justify-content-center align-items-center height-self-center">
@@ -59,17 +60,22 @@
 
 <script>
     import {request} from "../../network/netWork";
+    import AlertMessege from "../../components/msg/AlertMessage";
 
     export default {
         name: "Login",
+
         data() {
             return {
                 email: null,
                 password: null,
                 remember: false,
-                msg:{
-                    flag:null,
-                    msg:null
+                alertMsg: {
+                    show: false,
+                    showTime: -1,
+                    type: "error",
+                    closeBtn: true,
+                    msg: ""
                 }
             }
         },
@@ -87,16 +93,18 @@
                         this.$store.commit('setToken',res.data.token);
                         this.$router.push('/index');
                     }else {
-                        console.log('登录失败');
+                        this.alertMsg.show = false;
+                        this.alertMsg.msg = "登录失败";
+                        this.alertMsg.showTime = 2000;
+                        this.alertMsg.show = true;
                     }
-                }).catch(res => {
-                    console.log(res);
                 });
             },
             cancelLogin(){
                 this.$router.push('/index')
             }
-        }
+        },
+        components: {AlertMessege}
     }
 </script>
 

@@ -21,9 +21,12 @@ const routes = [
                 component: Index
             }, {
                 path: "myDrive",
+                redirect: "myDrive/0"
+            }, {
+                path: "myDrive/:fid",
                 name: "MyDrive",
                 component: () => import("../views/drive/MyDrive")
-            }, {
+            },{
                 path: "recentAccess",
                 name: "RecentAccess",
                 component: () => import("../views/drive/RecentAccess")
@@ -34,7 +37,7 @@ const routes = [
             }, {
                 path: "dumpBox",
                 name: "DumpBox",
-                component: () => import("../views/DumpBox/DumpBox")
+                component: () => import("../views/drive/DumpBox")
             }, {
                 path: "userSettings",
                 name: "UserSettings",
