@@ -4,8 +4,8 @@
 
 <script>
     import Index from "../index/Index";
-    import FileView from "../../components/FileView/FileView";
-    import {request} from "../../network/netWork";
+    import FileView from "../../components/View/FileView/FileView";
+    import {request} from "../../axios/factory";
 
     export default {
         name: "MyDrive",

@@ -65,16 +65,21 @@
                 </div>
             </div>
         </confirm-message>
-        <div id="menu" v-show="menu.menuVisible" x-placement="bottom-end"
+        <confirm-message v-model="upLoadForm.show" :title="upLoadForm.title" confirm-text="上传"
+                         @submit="upLoadForm.submitAction=true">
+            <upload-tips :fid="fid" @success="uploadFileSuccess" @error="showMsg"
+                         :submitAction="upLoadForm.submitAction"/>
+        </confirm-message>
+        <div id="menu" v-show="menu.show" x-placement="bottom-end"
              class="dropdown-menu dropdown-menu-right show menuBox" aria-labelledby="dropdownMenuButton2"
              style="position: absolute; will-change: transform; top: 0; left: 300px; transform: translate3d(-140px, 24px, 0px);">
             <a class="dropdown-item" href="#" v-show="select.selectOne" @click="openFile(null)">
                 <i class="ri-eye-fill mr-2"></i>打开
             </a>
-            <a class="dropdown-item" href="#" v-show="select.selectOne" @click="editFile(null)">
-                <i class="ri-pencil-fill mr-2"></i>编辑
-            </a>
-            <a class="dropdown-item" href="#" v-show="select.selectSome" @click="downloadFiles(null)">
+            <!--            <a class="dropdown-item" href="#" v-show="select.selectOne" @click="editFile(null)">-->
+            <!--                <i class="ri-pencil-fill mr-2"></i>编辑-->
+            <!--            </a>-->
+            <a class="dropdown-item" href="#" v-show="select.selectOne" @click="downloadFile">
                 <i class="fas fa-cloud-download-alt mr-2"></i>下载
             </a>
             <a class="dropdown-item" href="#" @click="freshData">
@@ -92,9 +97,12 @@
             <a class="dropdown-item" href="#" v-show="haveCopyFiles" @click="pasteFiles">
                 <i class="fas fa-paste mr-2"></i>粘贴
             </a>
-            <!--            <a class="dropdown-item" href="#" v-show="select.selectSome" @click="removeFiles(null)">-->
-            <!--                <i class="ri-delete-bin-6-line mr-2"></i>移入回收站-->
-            <!--            </a>-->
+            <a class="dropdown-item" href="#" v-show="select.selectOne && !activeFile().isHeart" @click="addFavorite">
+                <i class="lar la-star mr-2"></i>收藏
+            </a>
+            <a class="dropdown-item" href="#" v-show="select.selectOne && activeFile().isHeart" @click="removeFavorite">
+                <i class="fa fa-star mr-2"></i>取消收藏
+            </a>
             <a class="dropdown-item" href="#" v-show="select.selectSome" @click="deleteFiles(null)">
                 <i class="ri-delete-bin-6-fill mr-2"></i>删除
             </a>
@@ -104,7 +112,7 @@
             <a class="dropdown-item" href="#" @click.stop.prevent="initFileName(true)">
                 <i class="ri-folder-add-line mr-2"></i>新建文件夹
             </a>
-            <a class="dropdown-item" href="#">
+            <a class="dropdown-item" href="#" @click.stop.prevent="uploadFile">
                 <i class="fas fa-cloud-upload-alt mr-2"></i>上传文件
             </a>
         </div>
@@ -179,10 +187,11 @@
                              @dblclick.prevent.stop="openFile(file)"
                         >
                             <div>
-                                <img :src="require('@/assets/images/layouts/file_type/'+switchIconSuffix(file)+'.png')"
+                                <img :src="fileIcon(file)"
                                      class="img-fluid mb-1" alt="images"/>
                             </div>
                             <input type="text" class="fileName dropdown-toggle search-query text search-input"
+                                   :class="file.isHeart ? 'text-danger' : ''"
                                    v-model="file.name" @change.lazy="reNameFile(file)" @click.stop @dblclick.stop/>
                         </div>
                     </div>
@@ -210,7 +219,7 @@
                                             <th scope="col">文件名</th>
                                             <th scope="col">最近修改时间</th>
                                             <th scope="col">大小</th>
-                                            <th scope="col">操作</th>
+                                            <!--                                            <th scope="col">操作</th>-->
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -226,7 +235,7 @@
                                             <td>
                                                 <div class="file_type_box">
                                                     <img class="img-fluid small_img"
-                                                         :src="require('@/assets/images/layouts/file_type/'+switchIconSuffix(file)+'.png')">
+                                                         :src="fileIcon(file)">
                                                 </div>
                                             </td>
                                             <td>
@@ -236,31 +245,6 @@
                                             </td>
                                             <td>{{file.lastUpdateDate}}</td>
                                             <td>{{file.size}}</td>
-                                            <td>
-                                                <div class="actionBox">
-                                                    <button type="button"
-                                                            class="btn btn-outline-primary rounded-small mt-2"
-                                                            @click="openFile(file)">
-                                                        <i class="ri-eye-fill mr-1"></i>
-                                                    </button>
-
-                                                    <button type="button"
-                                                            class="btn btn-outline-success rounded-small mt-2"
-                                                            @click="editFile(file)">
-                                                        <i class="ri-pencil-fill mr-1"></i>
-                                                    </button>
-                                                    <button type="button"
-                                                            class="btn btn-outline-warning rounded-small mt-2"
-                                                            @click="downloadFiles(file)">
-                                                        <i class="fa fa-arrow-circle-down mr-1"></i>
-                                                    </button>
-                                                    <button type="button"
-                                                            class="btn btn-outline-danger rounded-small mt-2"
-                                                            @click="deleteFiles([file])">
-                                                        <i class="ri-delete-bin-6-fill mr-1"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -275,20 +259,23 @@
 </template>
 
 <script>
-    import AlertMessage from "../msg/AlertMessage";
-    import ConfirmMessage from "../msg/ConfirmMessage";
-    import Loading from "../msg/Loading";
-    import {request} from "../../network/netWork";
+    import AlertMessage from "../../msg/AlertMessage";
+    import ConfirmMessage from "../../msg/ConfirmMessage";
+    import Loading from "../../msg/Loading";
+    import {request} from "../../../axios/factory";
+    import UploadTips from "./fileLoad/uploadTips";
+    import {openFileOrFolder} from "../../../fn/loaction";
+    import {addFavorite, fileIconBySuffix, initKeyAction, removeFavorite} from "../../../fn/fileAction";
 
     export default {
         name: "FileView",
-        components: {Loading, ConfirmMessage, AlertMessage},
+        components: {UploadTips, Loading, ConfirmMessage, AlertMessage},
         data() {
             return {
-                typeOrderRule: ["pptx", "pdf", "docx", "xlsx", "txt", "gif", "png", "jpg", "jpeg", "webp", "cur", "ico"],
+                fid: this.$route.params.fid,
                 showGrid: true,
                 menu: {
-                    menuVisible: false
+                    show: false
                 },
                 select: {
                     selects: [],
@@ -298,58 +285,6 @@
                     lastSelect: null,
                 },
                 locationSplit: [],
-                keyActions: [
-                    {
-                        isCtrl: true,
-                        isShift: false,
-                        isAlt: false,
-                        key: "a",
-                        then: _this => {
-                            _this.ChangeEverySelect.call(_this, !_this.select.selectAll);
-                        }
-                    }, {
-                        isCtrl: true,
-                        isShift: false,
-                        isAlt: false,
-                        key: "v",
-                        then: _this => {
-                            _this.pasteFiles();
-                        }
-                    }, {
-                        isCtrl: true,
-                        isShift: false,
-                        isAlt: false,
-                        key: "x",
-                        then: _this => {
-                            _this.cutFiles();
-                        }
-                    }, {
-                        isCtrl: true,
-                        isShift: false,
-                        isAlt: false,
-                        key: "c",
-                        then: _this => {
-                            _this.copyFiles();
-                        }
-                    }, {
-                        isCtrl: false,
-                        isShift: false,
-                        isAlt: false,
-                        key: "Delete",
-                        then: _this => {
-                            _this.removeFiles(null);
-                        }
-                    }, {
-                        isCtrl: false,
-                        isShift: true,
-                        isAlt: false,
-                        key: "Delete",
-                        then: _this => {
-                            _this.removeFiles(null);
-                        }
-                    }
-
-                ],
                 newFileForm: {
                     isFolder: null,
                     name: null,
@@ -386,8 +321,8 @@
                 },
                 upLoadForm: {
                     show: false,
-                    files: null,
-                    isOne: null
+                    title: "",
+                    submitAction: false
                 },
                 downLoadForm: {
                     show: false
@@ -409,72 +344,8 @@
         },
         methods: {
             //根据文件后缀名返回类型
-            switchIconSuffix(file) {
-                //识别文件夹
-                if (file.isFolder) {
-                    if (file.isLock) return "folder-lock";
-                    if (file.isHeart) return "folder-heart";
-                    if (file.size === "0kb") return "folder_empty";
-                    return "folder";
-                }
-                //识别文件
-                let fileName = file.name;
-                let suffix = {
-                    type_same_name: ["doc", "eps", "config", "gif", "html", "iso", "java", "jar", "jpg", "js", "json",
-                        "md", "mp3", "mp4", "pdf", "png", "ppt", "psd", "svg", "txt", "xlsx", "zip"],
-                    type_different_name: [
-                        {
-                            fn: suffix => {
-                                let zip_suffix = ["zip", "rar", "7z", "war"];
-                                return zip_suffix.includes(suffix)
-                            },
-                            res: "zip"
-                        }, {
-                            fn: suffix => {
-                                let zip_suffix = ["ppt", "pptx"];
-                                return zip_suffix.includes(suffix)
-                            },
-                            res: "ppt"
-                        }, {
-                            fn: suffix => {
-                                let zip_suffix = ["doc", "docx"];
-                                return zip_suffix.includes(suffix)
-                            },
-                            res: "doc"
-                        }, {
-                            fn: suffix => {
-                                let zip_suffix = ["xlsx", "xls"];
-                                return zip_suffix.includes(suffix)
-                            },
-                            res: "xlsx"
-                        }, {
-                            fn: suffix => {
-                                let zip_suffix = ["config", "vmoptions", "ini"];
-                                return zip_suffix.includes(suffix)
-                            },
-                            res: "config"
-                        }, {
-                            fn: suffix => {
-                                let zip_suffix = ["ico", "gif", "cur", "png", "jpg", "jpeg", "webp"];
-                                return zip_suffix.includes(suffix)
-                            },
-                            res: "img"
-                        }
-                    ],
-                };
-                //没有后缀的文件
-                let temp = fileName.split(".");
-                if (temp.length === 1) return "file";
-                //有后缀的文件
-                let fileSuffix = temp[temp.length - 1];
-                //后缀和识别后图片名一样
-                if (suffix.type_same_name.includes(fileSuffix)) return fileSuffix;
-                //后缀和识别后图片名不一样
-                let res = "file";
-                suffix.type_different_name.forEach(item => {
-                    if (item.fn(fileSuffix)) res = item.res;
-                });
-                return res;
+            fileIcon(file) {
+                return fileIconBySuffix(file);
             },
             //选中或取消选中
             selectAllClickFn() {
@@ -522,7 +393,7 @@
                     this.ChangeEverySelect(false);
                 }
                 // 显示模态窗口，跳出自定义菜单栏
-                this.menu.menuVisible = true;
+                this.menu.show = true;
                 //根据菜单和屏幕的大小，元素的位置，进行定位
                 const menu = document.querySelector('#menu');
 
@@ -538,7 +409,7 @@
             },
             //右键菜单隐藏
             menHideByBlur() { // 取消鼠标监听事件 菜单栏
-                this.menu.menuVisible = false;
+                this.menu.show = false;
                 document.removeEventListener('click', this.menHideByBlur);
                 // 要及时关掉监听，不关掉的是一个坑，不信你试试，虽然前台显示的时候没有啥毛病，加一个alert你就知道了
             },
@@ -546,12 +417,27 @@
             initFileName(isFolder) {
                 this.newFileForm.show = true;
                 this.newFileForm.isFolder = isFolder;
-                this.menu.menuVisible = false;
+                this.menu.show = false;
                 document.querySelector("#newFileBox .fileNameInput:first-child").focus();
             },
             //文件名输入完成
             finishFileName() {
                 console.log(this.newFileForm.isFolder ? "新建文件夹" : "新建文件", this.newFileForm.name);
+                const fileName = this.newFileForm.name;
+                if (!fileName) return;
+                const isFolder = this.newFileForm.isFolder;
+                const parent = this.$route.params.fid;
+                request({
+                    url:"file/createNewFile",
+                    params:{
+                        isFolder,fileName, parent
+                    }
+                }).then(res => {
+                    this.showMsg("创建文件"+fileName+"成功!",2000,"success");
+                    this.freshData();
+                }).catch(res => {
+                    this.showMsg("创建文件"+fileName+"失败！",2000,"error");
+                });
                 this.newFileForm.show = false;
             },
             //获取选中的单个文件
@@ -650,41 +536,20 @@
                     }
                 }
             },
-            //编辑文件
-            editFile(fileParam) {
-                if (fileParam) {
-                    console.log("编辑", fileParam);
-                } else {
-                    if (this.selectOne) {
-                        this.editFile(this.activeFile());
-                    } else if (this.selectSome) {
-                        this.showMsg("请先选择一个文件!", 2000, "error");
-                    } else {
-                        this.showMsg("不能同时编辑多个文件!", 2000, "error");
-                    }
-                }
-            },
             //打开文件
             openFile(fileParam) {
                 if (fileParam) {
-                    if (fileParam.isFolder) {
-                        this.$router.push('/myDrive/' + fileParam.fid);
-                    } else {
-
-                    }
+                    console.log(fileParam);
+                    openFileOrFolder(this, fileParam);
                 } else {
-                    if (this.selectOne) {
-                        this.editFile(this.activeFile());
-                    } else if (this.selectSome) {
-                        this.showMsg("请先选择一个文件!", 2000, "error");
-                    } else {
+                    if (this.select.selectOne) {
+                        this.openFile(this.activeFile());
+                    } else if (this.select.selectSome) {
                         this.showMsg("不能同时打开多个文件!", 2000, "error");
+                    } else {
+                        this.showMsg("请先选择一个文件!", 2000, "error");
                     }
                 }
-            },
-            //下载文件
-            downloadFiles(fileParam) {
-                console.log("下载文件", this.activeFiles());
             },
             //复制文件
             copyFiles() {
@@ -789,43 +654,73 @@
             cancelPaste() {
                 this.moveFilesConflictForm.show = false;
             },
+            addFavorite(){
+                const activeFile = this.activeFile();
+                const fid = activeFile.fid;
+                addFavorite(this,fid);
+            },
+            removeFavorite(){
+                const activeFile = this.activeFile();
+                const fid = activeFile.fid;
+                removeFavorite(this,fid);
+            },
             //上传文件
-            uploadFile(fileParam) {
-
+            uploadFile() {
+                this.upLoadForm.show = true;
+                this.menu.show = false;
             },
-            //上传多个文件
-            uploadFiles(fileParam) {
-
+            //上传文件成功后调用
+            uploadFileSuccess(msg) {
+                this.freshData();
+                this.showMsg(msg, 2000, "success");
             },
+            //下载文件
+            downloadFile() {
+                const file = this.activeFile();
+                if (file) {
+                    const fileName = file.isFolder ? file.name + ".zip" : file.name;
+                    request({
+                        url: "file/download",
+                        method: "GET",
+                        params: {
+                            fid: file.fid
+                        },
+                        responseType: 'blob'
+                    }).then(res => {
+                        console.log(res);
+                        let url = window.URL.createObjectURL(new Blob([res]));
+                        let a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.setAttribute('download', fileName);
+                        document.body.appendChild(a);
+                        a.click(); //执行下载
+                        window.URL.revokeObjectURL(a.href);//释放url
+                        document.body.removeChild(a); //释放标签
+                    });
+                } else {
+                    this.showMsg("请先选中一个文件", 2000, "error");
+                }
+            },
+            //初始化路径
             initLocationPath() {
                 this.locationSplit = this.location.split("/");
             },
+            //初始化文件选中状态
             initSelect() {
                 this.select.selects = [];
                 for (let i = 0; i < this.fileData.length; i++) {
                     this.select.selects[i] = false;
                 }
             },
-            //绑定快捷键函数
-            initKeyAction() {
-                const _this = this;
-                document.onkeydown = e => {
-                    // console.log(e);
-                    const key = e.key;
-                    _this.keyActions.forEach(item => {
-                        item.key === key &&
-                        (!item.isCtrl || e.ctrlKey) &&
-                        (!item.isShift || e.shiftKey) &&
-                        (!item.isAlt || e.altKey) &&
-                        item.then(_this);
-                    });
-                }
-            },
+            //初始化入口
             initFn() {
                 this.initLocationPath();
                 this.initSelect();
-                this.initKeyAction();
+                //绑定快捷键函数
+                initKeyAction(this);
             },
+            //显示提示消息
             showMsg(msg, showTime, type) {
                 this.alertMsg.show = false;
                 this.alertMsg.msg = msg;
@@ -833,9 +728,11 @@
                 this.alertMsg.type = type;
                 this.alertMsg.show = true;
             },
+            //刷新页面
             freshData() {
                 this.$emit("fresh");
             },
+            //文件操作时需要确认时，创建对应的确认提示框
             loadFile(file, form) {
                 if (file.isFolder) {
                     this.$router.push("/myDrive/" + file.fid);
@@ -865,6 +762,7 @@
                 handler(val) {
                     if (!val) {
                         this.initFn();
+                        this.fid = this.$route.params.fid;
                     }
                 }
             }
@@ -957,16 +855,6 @@
 
     .dark .fileName {
         color: #a6a6a6;
-    }
-
-    .white .fileName:focus {
-        box-shadow: 0 0 4px 2px #e2e2e2;
-        border-radius: 8px;
-    }
-
-    .dark .fileName:focus {
-        box-shadow: 0 0 13px 10px #202023;
-        border-radius: 8px;
     }
 
     .i-grid .fileName {

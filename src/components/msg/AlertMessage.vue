@@ -1,5 +1,5 @@
 <template>
-    <div class="alertBox" v-show="value">
+    <div id="alertBox" v-show="value">
         <div id="alertContent" class="alert text-white" :class="typeClass">
             <div class="iq-alert-icon" v-show="iconShow">
                 <i :class="iconClass"></i>
@@ -88,8 +88,8 @@
     }
 </script>
 
-<style scoped>
-    .alertBox {
+<style>
+    #alertBox {
         width: 100vw;
         position: fixed;
         z-index: 1000;

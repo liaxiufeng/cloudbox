@@ -1,6 +1,6 @@
 <template>
     <div class="wrapper">
-        <alert-message v-model="alertMsg.show" v-bind="alertMsg"/>
+        <alert-messege v-model="alertMsg.show" v-bind="alertMsg"/>
         <section class="login-content">
             <div class="container h-100">
                 <div class="row justify-content-center align-items-center height-self-center">
@@ -59,7 +59,7 @@
 </template>
 
 <script>
-    import {request} from "../../network/netWork";
+    import {request} from "../../axios/factory";
     import AlertMessege from "../../components/msg/AlertMessage";
 
     export default {

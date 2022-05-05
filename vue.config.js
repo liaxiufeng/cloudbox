@@ -11,7 +11,7 @@ module.exports = {
                 }
             },
             '/api_net': {
-                target: 'http://liujun666.xyz:8181/cloudbox',
+                target: 'http://junza.top:8181/cloudbox',
                 changOrigin: true,
                 pathRewrite: {
                     '^/api_net': ''
@@ -27,7 +27,7 @@ module.exports = {
                 'components':"@/components",
                 'common':"@/common",
                 'views':"@/views",
-                'network':"@/network"
+                'network':"@/axios"
             }
         }
     }

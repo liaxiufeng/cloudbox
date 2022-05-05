@@ -73,7 +73,7 @@
 </template>
 
 <script>
-    import {request, toPage500} from "../../network/netWork";
+    import {request, toPage500} from "../../axios/factory";
     import AlertMessege from "../../components/msg/AlertMessage";
 
     export default {

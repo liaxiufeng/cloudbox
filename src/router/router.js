@@ -2,9 +2,26 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Index from '../views/index/Index.vue'
-import {request} from "../network/netWork";
+import {request} from "../axios/factory";
 
 Vue.use(VueRouter);
+
+
+// //解决编程式路由往同─地址到跳转时会报错的情况
+// const originalPush = VueRouter.prototype.push;
+// const originalReplace = VueRouter.prototype.replace;
+// //push
+// VueRouter.prototype.push = function push(location, onResolve, onReject) {
+//     if (onResolve || onReject)
+//         return originalPush.call(this, location, onResolve, onReject);
+//     return originalPush.call(this, location).catch(err => err);
+// }
+// // replace
+// VueRouter.prototype.replace = function push(location, onResolve, onReject) {
+//     if (onResolve || onReject)
+//         return originalReplace.call(this, location, onResolve, onReject);
+//     return originalReplace.call(this, location).catch(err => err);
+// }
 
 
 const routes = [
@@ -26,7 +43,14 @@ const routes = [
                 path: "myDrive/:fid",
                 name: "MyDrive",
                 component: () => import("../views/drive/MyDrive")
-            },{
+            }, {
+                path: "userChat",
+                redirect: "userChat/0"
+            }, {
+                path: "userChat/:uid",
+                name: "UserChat",
+                component: () => import("../views/user/UserChat")
+            }, {
                 path: "recentAccess",
                 name: "RecentAccess",
                 component: () => import("../views/drive/RecentAccess")
@@ -35,25 +59,28 @@ const routes = [
                 name: "favorite",
                 component: () => import("../views/drive/Favorite")
             }, {
-                path: "dumpBox",
-                name: "DumpBox",
-                component: () => import("../views/drive/DumpBox")
-            }, {
-                path: "userSettings",
-                name: "UserSettings",
-                component: () => import("../views/user/UserSettings")
-            }, {
                 path: "userProfile",
                 name: "UserProfile",
                 component: () => import("../views/user/UserProfile")
             }, {
-                path: "userAdd",
-                name: "UserAdd",
-                component: () => import("../views/user/UserAdd")
-            }, {
                 path: "userList",
                 name: "UserList",
                 component: () => import("../views/user/UserList")
+            }
+        ]
+    }, {
+        path: '/fn',
+        component: () => import("../views/FullScreenHome"),
+        children: [
+            {
+                path: "textView/:fid",
+                name: "TextView",
+                component: () => import("../components/View/textView/TextView")
+            },
+            {
+                path: "imgView/:fid",
+                name: "ImgView",
+                component: () => import("../components/View/imgView/ImgView")
             }
         ]
     }, {
@@ -93,7 +120,6 @@ const routes = [
         redirect: "/404"
     }
 ];
-
 const router = new VueRouter({
     mode: 'history',
     base: process.env.BASE_URL,
@@ -101,7 +127,7 @@ const router = new VueRouter({
 });
 
 // 导航守卫
-// 使用 router.beforeEach 注册一个全局前置守卫，判断用户是否登陆
+// 使用 router.beforeEach 注册一个全局前置守卫,判断用户是否登陆
 router.beforeEach((to, from, next) => {
     const excludes = ['/login', '/register', '/index', '/projectDetail', '/developer'];
     if (excludes.includes(to.path)) {

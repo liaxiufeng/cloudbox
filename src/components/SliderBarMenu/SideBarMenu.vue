@@ -112,8 +112,8 @@
                         icon: "las la-hdd",
                         text: "我的硬盘",
                         path: {
-                            match:/\/myDrive\/\d+/,
-                            to:"/myDrive"
+                            match: /\/myDrive\/\d+/,
+                            to: "/myDrive"
                         },
                         hasChild: true,
                         children: [
@@ -129,12 +129,6 @@
                                 path: "/favorite",
                                 hasChild: false,
                                 children: []
-                            }, {
-                                icon: "las la-trash-alt iq-arrow-left",
-                                text: "回收站",
-                                path: "/dumpBox",
-                                hasChild: false,
-                                children: []
                             }
                         ]
                     }, {
@@ -144,21 +138,18 @@
                         hasChild: true,
                         children: [
                             {
-                                icon: "las la-user-plus",
-                                text: "添加好友",
-                                path: "/userAdd",
-                                hasChild: false,
-                                children: []
-                            }, {
                                 icon: "las la-list-alt",
                                 text: "好友列表",
                                 path: "/userList",
                                 hasChild: false,
                                 children: []
                             }, {
-                                icon: "las la-user-cog",
-                                text: "账户设置",
-                                path: "/userSettings",
+                                icon: "las la-bell",
+                                text: "消息中心",
+                                path: {
+                                    match: /\/userChat\/\d+/,
+                                    to: "/userChat"
+                                },
                                 hasChild: false,
                                 children: []
                             }
@@ -178,7 +169,7 @@
         methods: {
             isActive(link) {
                 if (this.isActiveHandler(link)) return true;
-                if(link.hasChild){
+                if (link.hasChild) {
                     let flag = false;
                     link.children.forEach((item) => {
                         if (this.isActiveHandler(item)) flag = true;
@@ -189,15 +180,15 @@
             },
             isActiveHandler(link) {
                 let routePath = this.$route.path;
-                if (link.path instanceof Object){
+                if (link.path instanceof Object) {
                     return link.path.match.test(routePath);
-                }else{
+                } else {
                     return link.path === routePath;
                 }
             },
             isOpen(link) {
                 if (this.isActiveHandler(link)) return this.openAble;
-                if (link.hasChild){
+                if (link.hasChild) {
                     let flag = false;
                     link.children.forEach((item) => {
                         if (this.isActiveHandler(item)) {
@@ -212,15 +203,15 @@
             linkClick(link) {
                 if (!this.isActiveHandler(link)) {
                     let toPath = "";
-                    if (link.path instanceof Object){
+                    if (link.path instanceof Object) {
                         toPath = link.path.to;
-                    }else{
+                    } else {
                         toPath = link.path;
                     }
-                    this.$router.push(toPath).then(()=>{
+                    this.$router.push(toPath).then(() => {
                         this.openAble = true;
                     });
-                }else if (link.hasChild) {
+                } else if (link.hasChild) {
                     this.openAble = !this.openAble;
                 }
             }

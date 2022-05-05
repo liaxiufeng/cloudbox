@@ -8,84 +8,23 @@
                             <div class="select-dropdown input-prepend input-append">
                                 <div class="btn-group">
                                     <label data-toggle="dropdown">
-                                        <div class="dropdown-toggle search-query">My Drive
-                                            <i class="las la-angle-down ml-3"></i>
+                                        <div class="dropdown-toggle search-query">在线云盘系统
                                         </div>
-                                        <span class="search-replace">
-                        </span>
-                                        <span class="caret">
-                          <!--icon-->
-                        </span>
                                     </label>
-                                    <ul class="dropdown-menu">
-                                        <li>
-                                            <div class="item">
-                                                <i class="ri-folder-add-line pr-3">
-                                                </i>New Folder
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="item">
-                                                <i class="ri-file-upload-line pr-3">
-                                                </i>Upload Files
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="item">
-                                                <i class="ri-folder-upload-line pr-3">
-                                                </i>Upload Folders
-                                            </div>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="dashboard1-dropdown d-flex align-items-center">
-                                <div class="dashboard1-info">
-                                    <a href="#calander" class="collapsed" data-toggle="collapse" aria-expanded="false">
-                                        <i class="ri-arrow-down-s-line">
-                                        </i>
-                                    </a>
-                                    <ul id="calander" class="iq-dropdown collapse list-inline m-0 p-0 mt-2">
-                                        <li class="mb-2">
-                                            <a href="#" data-toggle="tooltip" data-placement="right" title=""
-                                               data-original-title="Calander">
-                                                <i class="las la-calendar iq-arrow-left">
-                                                </i>
-                                            </a>
-                                        </li>
-                                        <li class="mb-2">
-                                            <a href="#" data-toggle="tooltip" data-placement="right" title=""
-                                               data-original-title="Keep">
-                                                <i class="las la-lightbulb iq-arrow-left">
-                                                </i>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a href="#" data-toggle="tooltip" data-placement="right" title=""
-                                               data-original-title="Tasks">
-                                                <i class="las la-tasks iq-arrow-left">
-                                                </i>
-                                            </a>
-                                        </li>
-                                    </ul>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-8">
-                    <!--          <div class="card card-block card-stretch card-height iq-welcome" style="background: url('assets/images/layouts/mydrive/background.png') no-repeat scroll right center;-->
-                    <!--              background-color: #ffffff;-->
-                    <!--              background-size: contain;-->
-                    <!--              ">-->
                     <div class="card card-block card-stretch card-height iq-welcome"
                          style="background-color: #ffffff;background-size: contain;">
                         <div class="card-body property2-content">
                             <div class="d-flex flex-wrap align-items-center">
                                 <div class="col-lg-6 col-sm-6 p-0">
-                                    <h3 class="mb-3">Welcome Penny</h3>
-                                    <p class="mb-5">You have 32 new notifications and 23 unread messages to reply</p>
-                                    <a href="#">Try Now
+                                    <h3 class="mb-3">{{hello()}}</h3>
+                                    <p class="mb-5">你已拥有12个个人文件，3条未读消息。</p>
+                                    <a href="#">现在去看
                                         <i class="las la-arrow-right ml-2"></i>
                                     </a>
                                 </div>
@@ -97,7 +36,7 @@
                     <div class="card card-block card-stretch card-height">
                         <div class="card-header d-flex justify-content-between">
                             <div class="header-title">
-                                <h4 class="card-title">Quick Access</h4>
+                                <h4 class="card-title">文件帮助</h4>
                             </div>
                         </div>
                         <div class="card-body">
@@ -111,7 +50,7 @@
                                             <img src="../../assets/images/layouts/mydrive/folder-1.png"
                                                  class="img-fluid mb-1" alt="image1">
                                         </div>
-                                        <p class="mb-0">Planning</p>
+                                        <p class="mb-0">普通</p>
                                     </div>
                                 </li>
                                 <li class="col-lg-6 col-sm-6">
@@ -123,7 +62,7 @@
                                             <img src="../../assets/images/layouts/mydrive/folder-2.png"
                                                  class="img-fluid mb-1" alt="image2">
                                         </div>
-                                        <p class="mb-0">Wireframe</p>
+                                        <p class="mb-0">收藏</p>
                                     </div>
                                 </li>
                             </ul>
@@ -134,10 +73,10 @@
                     <div class="card card-block card-stretch card-transparent ">
                         <div class="card-header d-flex justify-content-between pb-0">
                             <div class="header-title">
-                                <h4 class="card-title">Documents</h4>
+                                <h4 class="card-title">丰富的文件图标</h4>
                             </div>
                             <div class="card-header-toolbar d-flex align-items-center">
-                                <a href="page-folders.html" class=" view-more">View All</a>
+                                <a href="#" class=" view-more">查看我的文件</a>
                             </div>
                         </div>
                     </div>
@@ -155,7 +94,7 @@
                                     <img src="../../assets/images/layouts/page-1/pdf.png" class="img-fluid"
                                          alt="image1">
                                 </div>
-                                <h6>Terms.pdf</h6>
+                                <h6>pdf文件.pdf</h6>
                             </a>
                         </div>
                     </div>
@@ -173,7 +112,7 @@
                                     <img src="../../assets/images/layouts/page-1/doc.png" class="img-fluid"
                                          alt="image1">
                                 </div>
-                                <h6>New-one.docx</h6>
+                                <h6>word文档文件.docx</h6>
                             </a>
                         </div>
                     </div>
@@ -191,7 +130,7 @@
                                     <img src="../../assets/images/layouts/page-1/xlsx.png" class="img-fluid"
                                          alt="image1">
                                 </div>
-                                <h6>Woo-box.xlsx</h6>
+                                <h6>excel表格文件.xlsx</h6>
                             </a>
                         </div>
                     </div>
@@ -209,7 +148,7 @@
                                     <img src="../../assets/images/layouts/page-1/ppt.png" class="img-fluid"
                                          alt="image1">
                                 </div>
-                                <h6>IOS-content.pptx</h6>
+                                <h6>ppt演示文档.pptx</h6>
                             </a>
                         </div>
                     </div>
@@ -218,12 +157,12 @@
                     <div class="card card-block card-stretch card-transparent">
                         <div class="card-header d-flex justify-content-between pb-0">
                             <div class="header-title">
-                                <h4 class="card-title">Folders</h4>
+                                <h4 class="card-title">我的使用报告</h4>
                             </div>
                             <div class="card-header-toolbar d-flex align-items-center">
                                 <div class="dropdown">
                       <span class="dropdown-toggle dropdown-bg btn bg-white" id="dropdownMenuButton1"
-                            data-toggle="dropdown">Name
+                            data-toggle="dropdown">排序
                         <i class="ri-arrow-down-s-line ml-1"></i>
                       </span>
                                     <div class="dropdown-menu dropdown-menu-right shadow-none"
@@ -237,211 +176,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-sm-6 col-lg-3">
-                    <div class="card card-block card-stretch card-height">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <a href="page-alexa.html" class="folder">
-                                    <div class="icon-small bg-danger rounded mb-4">
-                                        <i class="ri-file-copy-line">
-                                        </i>
-                                    </div>
-                                </a>
-                                <div class="card-header-toolbar">
-                                    <div class="dropdown">
-                        <span class="dropdown-toggle" id="dropdownMenuButton2" data-toggle="dropdown">
-                          <i class="ri-more-2-fill">
-                          </i>
-                        </span>
-                                        <div class="dropdown-menu dropdown-menu-right"
-                                             aria-labelledby="dropdownMenuButton2">
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-eye-fill mr-2">
-                                                </i>View</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-delete-bin-6-fill mr-2">
-                                                </i>Delete</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-pencil-fill mr-2">
-                                                </i>Edit</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-printer-fill mr-2">
-                                                </i>Print</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-file-download-fill mr-2">
-                                                </i>Download</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="page-alexa.html" class="folder">
-                                <h5 class="mb-2">Alexa Workshop</h5>
-                                <p class="mb-2">
-                                    <i class="lar la-clock text-danger mr-2 font-size-20">
-                                    </i>10 Dec,2020</p>
-                                <p class="mb-0">
-                                    <i class="las la-file-alt text-danger mr-2 font-size-20">
-                                    </i>08 Files</p>
-                            </a>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-sm-6 col-lg-3">
-                    <div class="card card-block card-stretch card-height">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <a href="page-android.html" class="folder">
-                                    <div class="icon-small bg-primary rounded mb-4">
-                                        <i class="ri-file-copy-line">
-                                        </i>
-                                    </div>
-                                </a>
-                                <div class="card-header-toolbar">
-                                    <div class="dropdown">
-                        <span class="dropdown-toggle" id="dropdownMenuButton3" data-toggle="dropdown">
-                          <i class="ri-more-2-fill">
-                          </i>
-                        </span>
-                                        <div class="dropdown-menu dropdown-menu-right"
-                                             aria-labelledby="dropdownMenuButton3">
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-eye-fill mr-2">
-                                                </i>View</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-delete-bin-6-fill mr-2">
-                                                </i>Delete</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-pencil-fill mr-2">
-                                                </i>Edit</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-printer-fill mr-2">
-                                                </i>Print</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-file-download-fill mr-2">
-                                                </i>Download</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="page-android.html" class="folder">
-                                <h5 class="mb-2">Android</h5>
-                                <p class="mb-2">
-                                    <i class="lar la-clock text-primary mr-2 font-size-20">
-                                    </i>09 Dec,2020</p>
-                                <p class="mb-0">
-                                    <i class="las la-file-alt text-primary mr-2 font-size-20">
-                                    </i>08 Files</p>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-sm-6 col-lg-3">
-                    <div class="card card-block card-stretch card-height">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <a href="page-brightspot.html" class="folder">
-                                    <div class="icon-small bg-info rounded mb-4">
-                                        <i class="ri-file-copy-line">
-                                        </i>
-                                    </div>
-                                </a>
-                                <div class="card-header-toolbar">
-                                    <div class="dropdown">
-                        <span class="dropdown-toggle" id="dropdownMenuButton4" data-toggle="dropdown">
-                          <i class="ri-more-2-fill">
-                          </i>
-                        </span>
-                                        <div class="dropdown-menu dropdown-menu-right"
-                                             aria-labelledby="dropdownMenuButton4">
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-eye-fill mr-2">
-                                                </i>View</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-delete-bin-6-fill mr-2">
-                                                </i>Delete</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-pencil-fill mr-2">
-                                                </i>Edit</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-printer-fill mr-2">
-                                                </i>Print</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-file-download-fill mr-2">
-                                                </i>Download</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="page-brightspot.html" class="folder">
-                                <h5 class="mb-2">Brightspot</h5>
-                                <p class="mb-2">
-                                    <i class="lar la-clock text-info mr-2 font-size-20">
-                                    </i>07 Dec,2020</p>
-                                <p class="mb-0">
-                                    <i class="las la-file-alt text-info mr-2 font-size-20">
-                                    </i>08 Files</p>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-sm-6 col-lg-3">
-                    <div class="card card-block card-stretch card-height">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <a href="page-ionic.html" class="folder">
-                                    <div class="icon-small bg-success rounded mb-4">
-                                        <i class="ri-file-copy-line">
-                                        </i>
-                                    </div>
-                                </a>
-                                <div class="card-header-toolbar">
-                                    <div class="dropdown">
-                        <span class="dropdown-toggle" id="dropdownMenuButton5" data-toggle="dropdown">
-                          <i class="ri-more-2-fill">
-                          </i>
-                        </span>
-                                        <div class="dropdown-menu dropdown-menu-right"
-                                             aria-labelledby="dropdownMenuButton5">
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-eye-fill mr-2">
-                                                </i>View</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-delete-bin-6-fill mr-2">
-                                                </i>Delete</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-pencil-fill mr-2">
-                                                </i>Edit</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-printer-fill mr-2">
-                                                </i>Print</a>
-                                            <a class="dropdown-item" href="#">
-                                                <i class="ri-file-download-fill mr-2">
-                                                </i>Download</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <a href="page-ionic.html" class="folder">
-                                <h5 class="mb-2">Ionic Chat App</h5>
-                                <p class="mb-2">
-                                    <i class="lar la-clock text-success mr-2 font-size-20">
-                                    </i>06 Dec,2020</p>
-                                <p class="mb-0">
-                                    <i class="las la-file-alt text-success mr-2 font-size-20">
-                                    </i>08 Files</p>
-                            </a>
-                        </div>
-                    </div>
-                </div>
                 <div class="col-lg-8 col-xl-8">
                     <div class="card card-block card-stretch card-height files-table">
                         <div class="card-header d-flex justify-content-between">
                             <div class="header-title">
-                                <h4 class="card-title">Files</h4>
+                                <h4 class="card-title">最近访问</h4>
                             </div>
                             <div class="card-header-toolbar d-flex align-items-center">
-                                <a href="page-files.html" class=" view-more">View All</a>
+                                <a href="#" class=" view-more">查看更多</a>
                             </div>
                         </div>
                         <div class="card-body pt-0">
@@ -449,12 +191,11 @@
                                 <table class="table mb-0 table-borderless tbl-server-info">
                                     <thead>
                                     <tr>
-                                        <th scope="col">Name</th>
-                                        <th scope="col">Members</th>
-                                        <th scope="col">Last Edit</th>
-                                        <th scope="col">Size</th>
-                                        <th scope="col">
-                                        </th>
+                                        <th scope="col">文件名</th>
+                                        <th scope="col">所有者</th>
+                                        <th scope="col">上次编辑</th>
+                                        <th scope="col">大小</th>
+                                        <th scope="col">操作</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -503,7 +244,7 @@
                                             </div>
                                         </td>
                                     </tr>
-                                    <tr class="active">
+                                    <tr>
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="icon-small bg-primary rounded mr-3">
@@ -693,7 +434,7 @@
                     <div class="card card-block card-stretch card-height ">
                         <div class="card-header d-flex justify-content-between">
                             <div class="header-title">
-                                <h4 class="card-title">Statistic</h4>
+                                <h4 class="card-title">历史总览</h4>
                             </div>
                         </div>
                         <div class="card-body">
@@ -711,7 +452,6 @@
                                 </div>
                                 <div style="width: 100%; height: 100%; position: relative; left: 0.328125px;">
                                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-                                         xmlns:xlink="http://www.w3.org/1999/xlink" role="group"
                                          style="width: 100%; height: 100%; overflow: visible;">
                                         <desc>JavaScript chart by amCharts</desc>
                                         <defs>
@@ -1039,7 +779,7 @@
                                             </i>
                                         </div>
                                         <div class="media-body ml-3">
-                                            <p class="mb-0">Downloads</p>
+                                            <p class="mb-0">下载</p>
                                             <h5>12,594</h5>
                                         </div>
                                     </div>
@@ -1051,7 +791,7 @@
                                             </i>
                                         </div>
                                         <div class="media-body ml-3">
-                                            <p class="mb-0">Uploads</p>
+                                            <p class="mb-0">上传</p>
                                             <h5>1,458</h5>
                                         </div>
                                     </div>
@@ -1063,12 +803,12 @@
                 <div class="col-lg-4">
                     <div class="card card-block card-stretch card-height plan-bg">
                         <div class="card-body">
-                            <h4 class="mb-3 text-white">Unlock Your plan</h4>
-                            <p>Expanded Storage,Access To
-                                <br>More Features On CloudBOX</p>
+                            <h4 class="mb-3 text-white">解锁更多功能</h4>
+                            <p>扩展存储、高速带宽更对的特权就在
+                                <br>CloudBOX</p>
                             <div class="row align-items-center justify-content-between">
                                 <div class="col-6 go-white ">
-                                    <a href="#" class="btn d-inline-block mt-5">Go Premium</a>
+                                    <a href="#" class="btn d-inline-block mt-5">去了解</a>
                                 </div>
                                 <div class="col-6">
                                     <img src="../../assets/images/layouts/mydrive/lock-bg.png" class="img-fluid"
@@ -1082,12 +822,12 @@
                     <div class="card card-block card-stretch card-height">
                         <div class="card-header d-flex justify-content-between pb-0">
                             <div class="header-title">
-                                <h4 class="card-title">Storage</h4>
+                                <h4 class="card-title">访问量</h4>
                             </div>
                             <div class="card-header-toolbar d-flex align-items-center">
                                 <div class="dropdown">
                       <span class="dropdown-toggle btn dropdown-bg border border-primary text-primary rounded"
-                            id="dropdownMenuButton11" data-toggle="dropdown">Monthly
+                            id="dropdownMenuButton11" data-toggle="dropdown">按月
                         <i class="ri-arrow-down-s-line ml-1"></i>
                       </span>
                                     <div class="dropdown-menu dropdown-menu-right shadow-none"
@@ -1404,7 +1144,24 @@
 
 <script>
     export default {
-        name: "Index"
+        name: "Index",
+        methods: {
+            hello() {
+                let hello = "尊敬的用户";
+                const hour = new Date().getHours();
+                if (hour < 6) hello += ',凌晨好!';
+                else if (hour < 9) hello += ',早上好!';
+                else if (hour < 12) hello += ',上午好!';
+                else if (hour < 14) hello += ',中午好!';
+                else if (hour < 17) hello += ',下午好!';
+                else if (hour < 19) hello += ',傍晚好!';
+                else if (hour < 22) hello += ',晚上好!';
+                else {
+                    hello = '深夜了,' + hello + ",注意休息！";
+                }
+                return hello;
+            }
+        }
     }
 </script>
 

@@ -82,4 +82,29 @@
     .viewHide {
         opacity: 0;
     }
+
+    .dark .messageBox textarea.el-textarea__inner,.dark .el-upload--picture-card,.dark .el-input__inner{
+        background: #1d1d1f;
+        color: #a6a6a6;
+        border-color: #8f93f6;
+    }
+
+    .dark .el-button--primary{
+        background:#8f93f6;
+    }
+
+    .dark .el-button--primary span{
+        color:#fff;
+    }
+
+    .white input:focus {
+        box-shadow: 0 0 4px 2px #e2e2e2;
+        border-radius: 8px;
+    }
+
+    .dark input:focus {
+        box-shadow: 0 0 13px 10px #202023;
+        border-radius: 8px;
+    }
+
 </style>
