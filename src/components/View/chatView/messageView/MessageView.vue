@@ -17,7 +17,7 @@
                                 <div class="row mb-3"
                                      :class="messageIsSend(item) ? 'justify-content-end':'justify-content-start'">
                                     <div class="col-1" v-if="!messageIsSend(item)">
-                                        <img data-v-8e1c2a7a="" :src="item.proposer.photo" alt="profile"
+                                        <img :src="item.proposer.photo" alt=""
                                              class="rounded img-fluid avatar-40 float-right">
                                     </div>
                                     <div class="col-6">
@@ -29,7 +29,7 @@
                                         </div>
                                     </div>
                                     <div class="col-1" v-if="messageIsSend(item)">
-                                        <img data-v-8e1c2a7a="" :src="item.proposer.photo" alt="profile"
+                                        <img :src="item.proposer.photo" alt=""
                                              class="rounded img-fluid avatar-40">
                                     </div>
                                 </div>
@@ -161,11 +161,11 @@
                 }
             },
             autoFreshData() {
-                clearTimeout(this.timer);
-                this.timer = setTimeout(()=> {
+                clearTimeout(this.autoFreshMessageTimer);
+                this.autoFreshMessageTimer = setTimeout(()=> {
                     if (this.chatUserId !== 0) {
-                        clearInterval(this.freshDataInterval);
-                        this.freshDataInterval = setInterval(() => {
+                        clearInterval(this.freshMessageInterval);
+                        this.freshMessageInterval = setInterval(() => {
                             request({
                                 url: "chat/message/freshData",
                                 params: {
@@ -174,21 +174,22 @@
                             }).then(res => {
                                 if (res.status === 200) {
                                     let data = res.data;
-                                    const needScroll = data.length > this.messageData.length;
-                                    data.forEach((item, index) => {
-                                        const user = this.user;
-                                        const chatUser = this.chatUser;
-                                        if (this.user.uid === item.proposer) {
-                                            item.proposer = user;
-                                            item.verifier = chatUser;
-                                        }
-                                        if (this.user.uid === item.verifier) {
-                                            item.verifier = user;
-                                            item.proposer = chatUser;
-                                        }
-                                    });
-                                    this.messageData = data;
-                                    this.needScroll = needScroll;
+                                    if (data.length > this.messageData.length){
+                                        data.forEach((item, index) => {
+                                            const user = this.user;
+                                            const chatUser = this.chatUser;
+                                            if (this.user.uid === item.proposer) {
+                                                item.proposer = user;
+                                                item.verifier = chatUser;
+                                            }
+                                            if (this.user.uid === item.verifier) {
+                                                item.verifier = user;
+                                                item.proposer = chatUser;
+                                            }
+                                        });
+                                        this.messageData = data;
+                                        this.needScroll = true;
+                                    }
                                 }
                             });
                         }, 1000);
@@ -205,8 +206,7 @@
         },
         updated() {
             this.needScroll && this.$nextTick(() => {
-                this.timer = null;
-                this.timer = setTimeout(() => {
+                setTimeout(() => {
                     const messageContent = this.$el.querySelector("#messageContent");
                     messageContent.scrollTop = messageContent.scrollHeight;
                     this.needScroll = false;
@@ -214,8 +214,8 @@
             });
         },
         destroyed() {
-            clearInterval(this.freshDataInterval);
-            clearTimeout(this.timer);
+            clearInterval(this.freshMessageInterval);
+            clearTimeout(this.autoFreshMessageTimer);
         },
         watch: {
             '$route'() {

@@ -1,28 +1,42 @@
 <template>
-    <div id="textViewBox">
+    <div class="content-page" id="contentBox">
         <alertMessage v-model="alertMsg.show" v-bind="alertMsg"/>
-        <LayOut>
-            <select v-model="cmOptions.theme" slot="theme">
-                <option selected>default</option>
-                <option>solarized dark</option>
-                <option>solarized light</option>
-                <option v-for="themeTemp in totalThemes">{{themeTemp}}</option>
-            </select>
-            <select slot="type" v-model="editorType" @change="EditorTypeChange">
-                <option v-for="(value,fieldName) in editorTypeDependencies"
-                        :value="fieldName">
-                    {{fieldName | typeSlice}}
-                </option>
-            </select>
-            <codemirror
-                    slot="textEditor"
-                    ref="mycode"
-                    v-model="curCode"
-                    :options="cmOptions"
-                    class="code"/>
-        </LayOut>
-        <div class="center">
-            <button type="button" class="btn btn-success mt-2" @click="saveFile" style="padding:10px 20px">保存(ctrl+s)</button>
+        <div id="textViewBox">
+            <div class="flex flex-row p-2 mt-0">
+                <h5>主题:</h5>
+                <label>
+                    <select v-model="cmOptions.theme" slot="theme" class="mr-4 select2-container">
+                        <option selected>default</option>
+                        <option>solarized dark</option>
+                        <option>solarized light</option>
+                        <option v-for="themeTemp in totalThemes">{{themeTemp}}</option>
+                    </select>
+                </label>
+                <h5>文件类型:</h5>
+                <label>
+                    <select slot="type" v-model="editorType" @change="EditorTypeChange">
+                        <option v-for="(value,fieldName) in editorTypeDependencies"
+                                :value="fieldName">
+                            {{fieldName | typeSlice}}
+                        </option>
+                    </select>
+                </label>
+            </div>
+
+
+            <LayOut>
+                <codemirror
+                        slot="textEditor"
+                        ref="mycode"
+                        v-model="curCode"
+                        :options="cmOptions"
+                        class="code"/>
+            </LayOut>
+            <div class="center">
+                <button type="button" class="btn btn-success mt-2" @click="saveFile" style="padding:10px 20px">
+                    保存(ctrl+s)
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -30,20 +44,20 @@
 <script>
     import LayOut from "./layout/LayOut";
     import {codemirror} from 'vue-codemirror'
-    import {totalThemes, editorTypeDependencies,commonDependencies,execFn,getEditorTypeByFileSuffix} from "./common";
+    import {totalThemes, editorTypeDependencies, commonDependencies, execFn, getEditorTypeByFileSuffix} from "./common";
     import {request} from "../../../axios/factory";
     import AlertMessage from "../../msg/AlertMessage";
+
     commonDependencies();
     //这个值为common.js文件中dependenciesHandler中的函数名
-    const fileSuffix = "html";
     const theme = "darcula";
-    const curCode= "如果你看到这条消息，说明文件打开失败了！";
+    const curCode = "如果你看到这条消息，说明文件打开失败了！";
     export default {
         name: "TextView",
         data() {
             return {
                 curCode,
-                editorType:"",
+                editorType: "",
                 cmOptions: {
                     mode: "das",
                     theme,
@@ -78,13 +92,13 @@
                 const _this = this;
                 request({
                     url: "file/txt",
-                    params: { fid,content},
+                    params: {fid, content},
                     method: "put"
                 }).then(res => {
-                    if (res.status === 200){
-                        _this.showMsg("保存成功！",2000,"success");
-                    }else {
-                        _this.showMsg("保存失败！",2000,"error");
+                    if (res.status === 200) {
+                        _this.showMsg("保存成功！", 2000, "success");
+                    } else {
+                        _this.showMsg("保存失败！", 2000, "error");
                     }
                 });
             },
@@ -94,9 +108,9 @@
                     this.themeImported.push(name);
                 }
             },
-            EditorTypeChange(){
-                for (let k in editorTypeDependencies){
-                    this.$set(this.cmOptions,"mode",execFn(editorTypeDependencies,this.editorType));
+            EditorTypeChange() {
+                for (let k in editorTypeDependencies) {
+                    this.$set(this.cmOptions, "mode", execFn(editorTypeDependencies, this.editorType));
                 }
             },
             showMsg(msg, showTime, type) {
@@ -119,8 +133,23 @@
         mounted() {
             this.importThemeDependencies(this.cmOptions.theme);
             // 设置编辑器语言类型
-            this.editorType = getEditorTypeByFileSuffix(fileSuffix);
-            this.$set(this.cmOptions,"mode",execFn(editorTypeDependencies,this.editorType));
+
+            request({
+                url: "file/file",
+                params: {
+                    fid: this.$route.params.fid
+                }
+            }).then(res => {
+                console.log(res);
+                if (res.status === 200) {
+                    const filename = res.data.name;
+                    const fileSuffix = filename.substring(filename.lastIndexOf(".") + 1);
+                    this.editorType = getEditorTypeByFileSuffix(fileSuffix);
+                    this.$set(this.cmOptions, "mode", execFn(editorTypeDependencies, this.editorType));
+                } else {
+                    this.$router.powerPush("/page500")
+                }
+            });
             document.onkeydown = e => {
                 if (e.keyCode === 83 && e.ctrlKey) {
                     e.stopPropagation();
@@ -128,9 +157,8 @@
                     this.saveFile();
                 }
             };
-            // let lineCount = this.$refs.mycode.codemirror.lineCount();
-            //显示提示
-        }, components: {
+        },
+        components: {
             AlertMessage,
             codemirror,
             LayOut
@@ -144,18 +172,14 @@
         },
         filters: {
             typeSlice(value) {
-                return value.slice(0,-4).replace("Plus","++");
+                return value.slice(0, -4).replace("Plus", "++");
             }
         }
     }
 </script>
 
 <style>
-    #textViewBox{
-        width: 100vw;
-    }
-    .CodeMirror{
+    .CodeMirror {
         height: 70vh;
-        min-height: 30vh;
     }
 </style>

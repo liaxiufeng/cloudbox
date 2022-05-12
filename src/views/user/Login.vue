@@ -36,7 +36,7 @@
                                         </div>
                                     </div>
                                     <div class="col-lg-6">
-                                        <a href="#" class="text-primary float-right">
+                                        <a href="#" @click.prevent="$router.push('/loginByEmail')" class="text-primary float-right">
                                             忘记密码?
                                         </a>
                                     </div>
@@ -47,7 +47,7 @@
                                 </div>
                                 <p class="mt-3">
                                     还没有账户?
-                                    <a href="/register" class="text-primary">去注册</a>
+                                    <a href="#" @click.prevent="$router.push('/register')" class="text-primary">去注册</a>
                                 </p>
                             </form>
                         </div>
@@ -59,8 +59,9 @@
 </template>
 
 <script>
-    import {request} from "../../axios/factory";
     import AlertMessege from "../../components/msg/AlertMessage";
+    import {login} from "../../fn/user";
+
 
     export default {
         name: "Login",
@@ -81,27 +82,17 @@
         },
         methods: {
             startLogin() {
-                request({
-                    url:"/login",
-                    method: 'post',
-                    params:{
-                        email: this.email,
-                        password: this.password
-                    }
-                }).then(res => {
-                    if (res.status === 200){
-                        this.$store.commit('setToken',res.data.token);
-                        this.$router.push('/index');
-                    }else {
-                        this.alertMsg.show = false;
-                        this.alertMsg.msg = "登录失败";
-                        this.alertMsg.showTime = 2000;
-                        this.alertMsg.show = true;
-                    }
-                });
+                login(this);
             },
             cancelLogin(){
                 this.$router.push('/index')
+            },
+            showMsg(msg, showTime, type) {
+                this.alertMsg.show = false;
+                this.alertMsg.msg = msg;
+                this.alertMsg.showTime = showTime;
+                this.alertMsg.type = type;
+                this.alertMsg.show = true;
             }
         },
         components: {AlertMessege}

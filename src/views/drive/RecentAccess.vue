@@ -89,8 +89,7 @@
     import {request} from "../../axios/factory";
     import AlertMessege from "../../components/msg/AlertMessage";
     import Loading from "../../components/msg/Loading";
-    import {openFile, openFileOrFolder} from "../../fn/loaction";
-    import {fileIconBySuffix, removeRecentAll} from "../../fn/fileAction";
+    import {fileIconBySuffix, removeRecentAll,openFile, openFileOrFolder} from "../../fn/fileAction";
 
     export default {
         name: "RecentAccess",

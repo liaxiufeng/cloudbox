@@ -264,8 +264,7 @@
     import Loading from "../../msg/Loading";
     import {request} from "../../../axios/factory";
     import UploadTips from "./fileLoad/uploadTips";
-    import {openFileOrFolder} from "../../../fn/loaction";
-    import {addFavorite, fileIconBySuffix, initKeyAction, removeFavorite} from "../../../fn/fileAction";
+    import {addFavorite, fileIconBySuffix, initKeyAction, removeFavorite,openFileOrFolder} from "../../../fn/fileAction";
 
     export default {
         name: "FileView",
@@ -539,7 +538,6 @@
             //打开文件
             openFile(fileParam) {
                 if (fileParam) {
-                    console.log(fileParam);
                     openFileOrFolder(this, fileParam);
                 } else {
                     if (this.select.selectOne) {

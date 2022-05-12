@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const baseURL = '/api';
-export const timeout = 3000;
+export const timeout = 5000;
 
 const instance = axios.create({
     baseURL,
@@ -9,7 +9,8 @@ const instance = axios.create({
 });
 
 export const request = config => instance(config);
-export const toPage500  = () => this.$router.push("/page500");
+export const toPage500  = () => this.$router.powerPush("/page500");
+export const toPage404  = () => this.$router.powerPush("/page404");
 
 //请求拦截器
 instance.interceptors.request.use(config => {

@@ -1,4 +1,7 @@
 export const mutations = {
+    changeAutoMenuShow(state){
+      state.autoSlideMenuShow = !state.autoSlideMenuShow;
+    },
     changeDark(state){
         state.isDark = !state.isDark;
     },

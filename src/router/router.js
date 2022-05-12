@@ -6,23 +6,18 @@ import {request} from "../axios/factory";
 
 Vue.use(VueRouter);
 
+// 解决编程式路由往同─地址到跳转时会报错的情况
 
-// //解决编程式路由往同─地址到跳转时会报错的情况
-// const originalPush = VueRouter.prototype.push;
-// const originalReplace = VueRouter.prototype.replace;
-// //push
-// VueRouter.prototype.push = function push(location, onResolve, onReject) {
-//     if (onResolve || onReject)
-//         return originalPush.call(this, location, onResolve, onReject);
-//     return originalPush.call(this, location).catch(err => err);
-// }
-// // replace
-// VueRouter.prototype.replace = function push(location, onResolve, onReject) {
-//     if (onResolve || onReject)
-//         return originalReplace.call(this, location, onResolve, onReject);
-//     return originalReplace.call(this, location).catch(err => err);
-// }
+//push
+VueRouter.prototype.powerPush = location => VueRouter.prototype.push(location).catch(err => document.location = location);
 
+// replace
+VueRouter.prototype.powerReplace = location => {
+    VueRouter.prototype.replace(location).catch(err => {
+        document.location = location;
+        this.$router.history.pop();
+    });
+};
 
 const routes = [
     {
@@ -68,7 +63,8 @@ const routes = [
                 component: () => import("../views/user/UserList")
             }
         ]
-    }, {
+    },
+    {
         path: '/fn',
         component: () => import("../views/FullScreenHome"),
         children: [
@@ -88,14 +84,6 @@ const routes = [
         name: "ProjectDetail",
         component: () => import("../views/about/ProjectDetail")
     }, {
-        path: "/page404",
-        name: "Page404",
-        component: () => import("../views/error/Page404")
-    }, {
-        path: "/page500",
-        name: "Page500",
-        component: () => import("../views/error/Page500")
-    }, {
         path: "/developer",
         name: "Developer",
         component: () => import("../views/about/Developer")
@@ -104,9 +92,21 @@ const routes = [
         name: "Login",
         component: () => import("../views/user/Login")
     }, {
+        path: "/loginByEmail",
+        name: "LoginByEmail",
+        component: () => import("../views/user/LoginByEmail")
+    }, {
         path: "/register",
         name: "Register",
         component: () => import("../views/user/Register")
+    }, {
+        path: "/page404",
+        name: "Page404",
+        component: () => import("../views/error/Page404")
+    }, {
+        path: "/page500",
+        name: "Page500",
+        component: () => import("../views/error/Page500")
     }, {
         path: "/500",
         name: "page500",
@@ -129,11 +129,10 @@ const router = new VueRouter({
 // 导航守卫
 // 使用 router.beforeEach 注册一个全局前置守卫,判断用户是否登陆
 router.beforeEach((to, from, next) => {
-    const excludes = ['/login', '/register', '/index', '/projectDetail', '/developer'];
+    const excludes = ['/login', '/register', '/index', '/projectDetail', '/developer','/loginByEmail'];
     if (excludes.includes(to.path)) {
         next();
     } else {
-        let token = localStorage.getItem('token');
         request({
             url: '/user'
         }).then(res => {

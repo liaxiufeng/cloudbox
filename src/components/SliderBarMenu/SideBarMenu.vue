@@ -8,7 +8,7 @@
                      alt="logo" v-if="$store.state.isDark">
             </a>
             <div class="iq-menu-bt-sidebar">
-                <i class="las la-bars wrapper-menu">
+                <i class="las la-bars wrapper-menu" @click.stop="$store.commit('changeAutoMenuShow')">
                 </i>
             </div>
         </div>

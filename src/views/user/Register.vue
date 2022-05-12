@@ -32,6 +32,23 @@
                                             <label>邮箱</label>
                                         </div>
                                     </div>
+                                    <div class="col-lg-8">
+                                        <div class="floating-label form-group">
+                                            <input v-model="user.verifierCode" class="floating-input form-control" type="text"
+                                                   placeholder=" " required @change.lazy="checkEmail">
+                                            <label>验证码</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4">
+                                        <div class="floating-label form-group">
+                                            <button type="button" class="btn btn-outline-primary"
+                                                    :disabled="emailCodeTimeIndex > 0"
+                                                    @click="sendEmailCode"
+                                                >
+                                                {{emailCodeTimeIndex === 0 ? '发送验证码' : '验证码('+emailCodeTimeIndex+')'}}
+                                            </button>
+                                        </div>
+                                    </div>
                                     <div class="col-lg-6">
                                         <div class="floating-label form-group">
                                             <input v-model="user.password" class="floating-input form-control"
@@ -73,8 +90,8 @@
 </template>
 
 <script>
-    import {request, toPage500} from "../../axios/factory";
     import AlertMessege from "../../components/msg/AlertMessage";
+    import {checkEmail, checkUserName, register, sendMailCode} from "../../fn/user";
 
     export default {
         name: "Register",
@@ -85,11 +102,13 @@
                     username: null,
                     email: null,
                     password: null,
-                    rePassword: null
+                    rePassword: null,
+                    verifierCode:null
                 },
+                emailCodeTimeIndex: 0,
                 alertMsg: {
                     show: false,
-                    showTime: 3000,
+                    showTime: 2000,
                     type: "error",
                     msg: ""
                 }
@@ -99,63 +118,19 @@
         },
         methods: {
             cancelRegister() {
-                this.$router.push('/index');
+                this.$router.powerPush('/index');
             },
             checkUserName() {
-                if (this.user.username) {
-                    request({
-                        url: "/register/checkUserName",
-                        method: "post",
-                        params: {username: this.user.username}
-                    }).then(res => {
-                        res.status === 200 ? this.showSuccess(res.msg) : this.showError(res.msg);
-                    }).catch(toPage500);
-                } else {
-                    this.showError("用户名不能为空！");
-                }
+                checkUserName(this);
             },
             checkEmail() {
-                if (!/^([a-zA-Z]|[0-9])(\w|\-)+@\w+\.[a-zA-Z]{2,4}$/.test(this.user.email)) {
-                    this.showError("邮箱格式不正确！");
-                } else if (this.user.email) {
-                    request({
-                        url: "/register/checkEmail",
-                        method: "post",
-                        params: {email: this.user.email}
-                    }).then(res => {
-                        res.status === 200 ? this.showSuccess(res.msg) : this.showError(res.msg);
-                    }).catch(toPage500);
-                } else {
-                    this.showError("邮箱不能为空！");
-                }
+                checkEmail(this);
             },
             register() {
-                if (!/^([a-zA-Z]|[0-9])(\w|\-)+@\w+\.[a-zA-Z]{2,4}$/.test(this.user.email)) {
-                    this.showError("邮箱格式不正确！");
-                } else if (this.user.password !== this.user.rePassword) {
-                    this.showError("俩次输入密码不一致！");
-                } else if (!(/\d+/g.test(this.user.password) &&
-                    /[a-zA-Z]+/g.test(this.user.password) &&
-                    /^.{6,16}$/g.test(this.user.password))) {
-                    this.showError("密码必须是包含数字和字母的6-16位字符！");
-                } else {
-                    request({
-                        url: "register",
-                        method: "post",
-                        params: this.user
-                    }).then(res => {
-                        if (res.status === 200) {
-                            this.showSuccess("注册成功");
-                            setTimeout(() => {
-                                this.$router.push("login");
-                            }, 200);
-                        } else {
-                            this.showError(res.msg);
-                        }
-                    }).catch(e=>{
-                        console.log(e);
-                    });
-                }
+                register(this);
+            },
+            sendEmailCode(){
+              sendMailCode(this,this.user.email);
             },
             showError(msg) {
                 this.alertMsg.msg = msg;
@@ -165,6 +140,13 @@
             showSuccess(msg) {
                 this.alertMsg.msg = msg;
                 this.alertMsg.type = "success";
+                this.alertMsg.show = true;
+            },
+            showMsg(msg, showTime, type) {
+                this.alertMsg.show = false;
+                this.alertMsg.msg = msg;
+                this.alertMsg.showTime = showTime;
+                this.alertMsg.type = type;
                 this.alertMsg.show = true;
             }
         }

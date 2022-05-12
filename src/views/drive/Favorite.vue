@@ -53,8 +53,7 @@
     import {request} from "../../axios/factory";
     import AlertMessege from "../../components/msg/AlertMessage";
     import Loading from "../../components/msg/Loading";
-    import {openFileOrFolder} from "../../fn/loaction";
-    import { fileIconBySuffix, removeFavorite, removeFavoriteAll} from "../../fn/fileAction";
+    import { fileIconBySuffix, removeFavorite, removeFavoriteAll,openFileOrFolder} from "../../fn/fileAction";
 
     export default {
         name: "favorite.vue",

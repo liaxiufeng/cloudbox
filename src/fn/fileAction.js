@@ -1,6 +1,42 @@
 import {request} from "../axios/factory";
 
 
+export const openFile = (_this, fid) => {
+    request({
+        url: "file/fileType",
+        method: "get",
+        params: {
+            fid
+        }
+    }).then(res => {
+        if (res.status === 200) {
+            if (res.data.isTxt) {
+                _this.$router.powerPush('/fn/textView/' + fid);
+            } else if (res.data.isImg) {
+                _this.$router.powerPush('/fn/ImgView/' + fid);
+            } else {
+                _this.showMsg("无法打开此文件！", 2000, "error");
+            }
+        } else {
+            _this.showMsg("无法读取该文件！", 2000, "error");
+        }
+    });
+};
+
+export const openFolder = (_this, fid) => {
+    _this.$router.powerPush('/myDrive/' + fid);
+};
+
+export const openFileOrFolder = (_this, file) => {
+    const fid = file.fid;
+    if (file.isFolder)
+        openFolder(_this, fid);
+    else
+        openFile(_this, fid);
+};
+
+
+
 export const removeRecentAll = (_this, isFolder) => {
     request({
         url: "/recentOpen/recent",

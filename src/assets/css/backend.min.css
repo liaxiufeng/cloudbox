@@ -9654,7 +9654,9 @@ a.text-dark:focus, a.text-dark:hover {
     position: relative;
     transition: all .6s ease-in-out
 }
-
+/*
+copyed
+ */
 @media (min-width: 1300px) {
     .iq-top-navbar .iq-navbar-custom .wrapper-menu {
         display: none
@@ -13007,7 +13009,9 @@ body.tab-horizontal .iq-footer {
 .iq-card-body.banner-box {
     padding-bottom: 0
 }
-
+/*
+copyed
+ */
 @media (min-width: 1300px) {
     body.sidebar-main .iq-footer {
         margin-left: 80px;
@@ -17307,7 +17311,9 @@ g[aria-describedby=id-22-description] {
     min-height: 100vh;
     transition: all .3s ease-in-out
 }
-
+/*
+copyed
+ */
 @media (min-width: 1300px) {
     body.sidebar-main .content-page {
         margin-left: 80px

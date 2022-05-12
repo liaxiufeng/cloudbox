@@ -9,6 +9,7 @@ Vue.use(Vuex);
 const state = {
     token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
     isDark: false,
+    autoSlideMenuShow:false,
     moveFiles: {
         files: [],
         isCopy: false,

@@ -12,7 +12,7 @@ export const totalThemes = ["3024-day", "3024-night", "abbott", "abcdef", "ambia
     "tomorrow-night-eighties", "ttcn", "twilight", "vibrant-ink", "xq-dark", "xq-light", "yeti", "idea", "darcula", "yonce",
     "zenburn"];
 
-const totalThemes2 = [];
+// const totalThemes2 = [];
 
 export const commonDependencies = () =>{
     require ('codemirror/lib/codemirror.css');
@@ -94,8 +94,7 @@ export const editorTypeDependencies = {
     livescriptType(){
         require("codemirror/mode/livescript/livescript");
         return "text/x-livescript";
-    },
-
+    }
 };
 
 export const execFn = (obj,fnName) => {
@@ -131,6 +130,6 @@ export const getEditorTypeByFileSuffix = (fileSuffix) =>{
             return k;
         }
     }
-    return "javascriptType";
+    return "htmlType";
 };
 

@@ -4,12 +4,11 @@
             <div id="loading-center"/>
         </div>
         <div class="wrapper">
+            <SideBarMenu/>
             <keep-alive>
                 <full-screen-nav-bar/>
             </keep-alive>
-            <div class="content-page" id="contentBox">
-                <router-view/>
-            </div>
+            <router-view/>
         </div>
         <Footer/>
     </div>
@@ -20,18 +19,10 @@
 
     export default {
         name: 'FullScreenHome',
-        components: { FullScreenNavBar}
+        components: {FullScreenNavBar}
     }
 </script>
 
 <style>
-    .iq-footer {
-        margin-left: 0;
-        width: 100vw;
-    }
 
-    .wrapper > div {
-        width: 100%;
-        margin-left: 0;
-    }
 </style>

@@ -66,9 +66,7 @@
             changeChatView(uid) {
                 if (uid !== parseInt(this.$route.params.uid)){
                     const locationStr = '/userChat/' + uid;
-                    this.$router.push(locationStr).catch(e => {
-                        document.location = locationStr
-                    })
+                    this.$router.powerPush(locationStr);
                 }
             },
             initData() {
@@ -82,11 +80,11 @@
                 });
             },
             autoFreshData() {
-                clearTimeout(this.timer);
-                this.timer = setTimeout(()=>{
+                clearTimeout(this.autoFreshChatListTimer);
+                this.autoFreshChatListTimer = setTimeout(()=>{
                     if (this.chatList.length > 0) {
-                        clearInterval(this.freshDataInterval);
-                        this.freshDataInterval = setInterval(() => {
+                        clearInterval(this.freshChatListnterval);
+                        this.freshChatListnterval = setInterval(() => {
                             request({
                                 url: "chat/chatList/freshData"
                             }).then(res => {
@@ -103,8 +101,7 @@
                                                     throw new Error("结束")
                                                 }
                                             })
-                                        } catch (e) {
-                                        }
+                                        } catch (e) {}
                                     });
                                 }
                             });
@@ -118,8 +115,8 @@
             this.autoFreshData();
         },
         destroyed() {
-            clearInterval(this.freshDataInterval);
-            clearTimeout(this.timer);
+            clearInterval(this.freshChatListnterval);
+            clearTimeout(this.autoFreshChatListTimer);
         },
         watch: {
             '$route'() {

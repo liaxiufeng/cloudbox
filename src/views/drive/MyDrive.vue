@@ -41,7 +41,6 @@
         components: {FileView, Index},
         watch:{
             '$route':'initData'
-        },
-        inject:["reload"]
+        }
     }
 </script>

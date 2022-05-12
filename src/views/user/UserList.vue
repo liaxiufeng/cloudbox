@@ -53,7 +53,8 @@
                                         <td class="text-center">
                                             <img class="rounded img-fluid avatar-40"
                                                                      :src="item.photo"
-                                                                     alt="profile"></td>
+                                                                     alt="">
+                                        </td>
                                         <td>{{item.username}}</td>
                                         <td>{{item.sex}}</td>
                                         <td>{{item.describeWord}}</td>
@@ -214,5 +215,4 @@
 </script>
 
 <style scoped>
-
 </style>

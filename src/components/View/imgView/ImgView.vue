@@ -1,12 +1,14 @@
 <template>
-    <div class="demo-image__placeholder">
-        <AlertMessage v-model="alertMsg.show" v-bind="alertMsg"/>
-        <div class="block">
-            <el-image :src="src">
-                <div slot="placeholder" class="image-slot">
-                    加载中<span class="dot">...</span>
-                </div>
-            </el-image>
+    <div class="content-page" id="contentBox">
+        <div class="demo-image__placeholder">
+            <AlertMessage v-model="alertMsg.show" v-bind="alertMsg"/>
+            <div class="block">
+                <el-image :src="src">
+                    <div slot="placeholder" class="image-slot">
+                        加载中<span class="dot">...</span>
+                    </div>
+                </el-image>
+            </div>
         </div>
     </div>
 </template>
@@ -47,7 +49,7 @@
             }).then(res => {
                 console.log(res);
                 if (res.status === 200){
-                    this.src = res.msg;
+                    this.src = res.data;
                 }else {
                     this.show
                 }
