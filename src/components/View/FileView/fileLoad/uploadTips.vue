@@ -3,7 +3,7 @@
         <el-upload
                 class="upload-demo"
                 ref="upload"
-                action="/api/file/upload"
+                :action="actionComputed"
                 :on-preview="handlePreview"
                 :on-success="uploadSuccess"
                 :on-error="uploadError"
@@ -21,6 +21,8 @@
 </template>
 
 <script>
+    import baseURL from "../../../../axios/factory";
+
     export default {
         name: "uploadTips",
         data() {
@@ -30,6 +32,11 @@
                 },
                 fileList: []
             };
+        },
+        computed:{
+          actionComputed(){
+              return baseURL + "file/upload";
+          }
         },
         methods: {
             submitUpload() {

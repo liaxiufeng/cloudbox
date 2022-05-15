@@ -78,7 +78,7 @@
                                     <button type="button" class="btn btn-success" @click="cancelRegister">取消</button>
                                 </div>
                                 <p class="mt-3">已有账号？
-                                    <a href="login" class="text-primary">去登录</a>
+                                    <a href="#" @click="$router.push('/login')" class="text-primary">去登录</a>
                                 </p>
                             </form>
                         </div>

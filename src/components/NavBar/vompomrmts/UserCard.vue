@@ -1,5 +1,6 @@
 <template>
     <div class="d-flex align-items-center">
+        <alert-messege v-model="alertMsg.show" v-bind="alertMsg"/>
         <div class="change-mode">
             <div class="custom-control custom-switch custom-switch-icon custom-control-inline">
                 <div class="custom-switch-inner">
@@ -51,10 +52,14 @@
                                 <div class="profile-header">
                                     <div class="cover-container text-center" v-if="user">
                                         <el-upload
-                                                class="avatar-uploader"
-                                                action=""
+                                                class="avatar-uploader mr-2"
+                                                :action="photoUploadUrl"
+                                                :headers="headers"
+                                                :before-upload="beforeUserPhotoUpload"
+                                                :on-success="userPhotoUploadSuccess"
+                                                :on-error="userPhotoUploadError"
                                                 :show-file-list="false">
-                                            <img v-if="user && user.photo" :src="user.photo" class="avatar">
+                                            <img v-if="user && user.photo" :src="user.photo" class="avatar"/>
                                             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                                         </el-upload>
                                         <div class="profile-detail">
@@ -170,15 +175,34 @@
 </template>
 
 <script>
+    import {beforeUserPhotoUpload, photoUploadUrl} from "../../../fn/user";
+    import AlertMessege from "../../msg/AlertMessage";
+
     export default {
         name: "UserCard",
+        components: {AlertMessege},
         data() {
             return {
                 userCardShow: false,
                 helpShow: false,
                 settingShow: false,
                 autoBarShow: false,
-                autoSearchShow: false
+                autoSearchShow: false,
+                headers: {
+                    token: localStorage.getItem('token'),
+                },
+                alertMsg: {
+                    show: false,
+                    showTime: -1,
+                    type: "error",
+                    closeBtn: true,
+                    msg: "this is a test msg!"
+                }
+            }
+        },
+        computed:{
+            photoUploadUrl(){
+                return photoUploadUrl();
             }
         },
         methods: {
@@ -195,6 +219,27 @@
             },
             changeDark() {
                 this.$store.commit('changeDark');
+            },
+            beforeUserPhotoUpload(file) {
+                beforeUserPhotoUpload(this, file);
+            },
+            userPhotoUploadSuccess(response, file, fileList) {
+                if (response.status === 200){
+                    this.$emit("updatePhoto",response.data);
+                    this.showMsg(response.msg,2000,"success");
+                }else {
+                    this.showMsg(response.msg,2000,"error");
+                }
+            },
+            userPhotoUploadError(response) {
+                console.log("error", response);
+            },
+            showMsg(msg, showTime, type) {
+                this.alertMsg.show = false;
+                this.alertMsg.msg = msg;
+                this.alertMsg.showTime = showTime;
+                this.alertMsg.type = type;
+                this.alertMsg.show = true;
             }
         },
         props: {

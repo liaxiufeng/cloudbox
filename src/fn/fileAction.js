@@ -11,9 +11,9 @@ export const openFile = (_this, fid) => {
     }).then(res => {
         if (res.status === 200) {
             if (res.data.isTxt) {
-                _this.$router.powerPush('/fn/textView/' + fid);
+                _this.$router.push('/fn/textView/' + fid);
             } else if (res.data.isImg) {
-                _this.$router.powerPush('/fn/ImgView/' + fid);
+                _this.$router.push('/fn/ImgView/' + fid);
             } else {
                 _this.showMsg("无法打开此文件！", 2000, "error");
             }
@@ -24,7 +24,7 @@ export const openFile = (_this, fid) => {
 };
 
 export const openFolder = (_this, fid) => {
-    _this.$router.powerPush('/myDrive/' + fid);
+    _this.$router.push('/myDrive/' + fid);
 };
 
 export const openFileOrFolder = (_this, file) => {

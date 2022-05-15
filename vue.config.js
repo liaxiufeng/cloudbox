@@ -1,33 +1,32 @@
-
 module.exports = {
     devServer: {
         //配置跨域
         proxy: {
+            '/local_api': {
+                target: 'http://localhost:8181',
+                changOrigin: true,
+                pathRewrite: {
+                    '^/local_api': ''
+                }
+            },
             '/api': {
-                target: 'http://localhost:8181/cloudbox',
-                changOrigin: true,  //允许跨域
+                target: 'http://47.117.114.242:8181',
+                changOrigin: true,
                 pathRewrite: {
                     '^/api': ''
                 }
-            },
-            '/api_net': {
-                target: 'http://junza.top:8181/cloudbox',
-                changOrigin: true,
-                pathRewrite: {
-                    '^/api_net': ''
-                }
-            },
+            }
         }
     },
     configureWebpack: {
         resolve: {
             //配置别名
             alias: {
-                'assets':"@/assets",
-                'components':"@/components",
-                'common':"@/common",
-                'views':"@/views",
-                'network':"@/axios"
+                'assets': "@/assets",
+                'components': "@/components",
+                'common': "@/common",
+                'views': "@/views",
+                'network': "@/axios"
             }
         }
     }

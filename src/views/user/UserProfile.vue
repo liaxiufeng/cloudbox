@@ -119,7 +119,7 @@
                                 <div class="card-body">
                                     <el-upload
                                             class="avatar-uploader mr-2"
-                                            action="/api/user/photo"
+                                            :action="photoUploadUrl"
                                             :headers="headers"
                                             :before-upload="beforeUserPhotoUpload"
                                             :on-success="userPhotoUploadSuccess"
@@ -391,7 +391,7 @@
 <script>
     import {
         beforeUserPhotoUpload,
-        initUser,
+        initUser, photoUploadUrl,
         updateBirthday,
         updateDescribeWord,
         updatePassword,
@@ -420,6 +420,11 @@
                     closeBtn: true,
                     msg: "this is a test msg!"
                 }
+            }
+        },
+        computed:{
+            photoUploadUrl(){
+                return photoUploadUrl();
             }
         },
         methods: {

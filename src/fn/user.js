@@ -1,4 +1,4 @@
-import {request, toPage500} from "../axios/factory";
+import baseURL, {request} from "../axios/factory";
 
 export const initUser = _this => {
     request({
@@ -101,7 +101,9 @@ export const checkUserName = _this =>{
             params: {username}
         }).then(res => {
             res.status === 200 ? _this.showSuccess(res.msg) : _this.showError(res.msg);
-        }).catch(toPage500);
+        }).catch(res => {
+            console.log(res);
+        });
     } else {
         _this.showError("用户名不能为空！");
     }
@@ -118,7 +120,9 @@ export const checkEmail = _this =>{
             params: {email}
         }).then(res => {
             res.status === 200 ? _this.showSuccess(res.msg) : _this.showError(res.msg);
-        }).catch(toPage500);
+        }).catch(res => {
+            console.log(res);
+        });
     } else {
         _this.showError("邮箱不能为空！");
     }
@@ -179,7 +183,7 @@ export const loginByEmail =(_this, verifierMail, verifierCode) =>{
         }).then(res => {
             if (res.status === 200){
                 _this.$store.commit('setToken',res.data.token);
-                _this.$router.powerPush('/index');
+                _this.$router.push('/index');
             }else {
                 _this.showMsg(res.msg,2000,"error");
             }
@@ -297,4 +301,8 @@ export const beforeUserPhotoUpload = (_this, file) => {
         _this.$message.error('上传头像图片大小不能超过 2MB!');
     }
     return isLt2M;
+};
+
+export const photoUploadUrl = () => {
+    return baseURL + "user/photo";
 };

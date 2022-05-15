@@ -147,7 +147,7 @@
                     this.editorType = getEditorTypeByFileSuffix(fileSuffix);
                     this.$set(this.cmOptions, "mode", execFn(editorTypeDependencies, this.editorType));
                 } else {
-                    this.$router.powerPush("/page500")
+                    this.$router.push("/page500");
                 }
             });
             document.onkeydown = e => {

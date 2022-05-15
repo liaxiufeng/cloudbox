@@ -66,7 +66,7 @@
             changeChatView(uid) {
                 if (uid !== parseInt(this.$route.params.uid)){
                     const locationStr = '/userChat/' + uid;
-                    this.$router.powerPush(locationStr);
+                    this.$router.push(locationStr);
                 }
             },
             initData() {

@@ -12,7 +12,7 @@
                     </a>
                 </div>
                 <search-file-card :user="user"/>
-                <user-card :user="user"/>
+                <user-card :user="user" @updatePhoto="updatePhoto"/>
             </nav>
         </div>
     </div>
@@ -34,13 +34,15 @@
         methods: {
             changeAutoMenuShow() {
                 this.$store.commit('changeAutoMenuShow');
+            },
+            updatePhoto(photo){
+                this.user.photo = photo;
             }
         },
         mounted() {
             request({
                 url: '/user'
             }).then(res => {
-                console.log(res);
                 if (res.status === 200){
                     this.user = res.data;
                 }

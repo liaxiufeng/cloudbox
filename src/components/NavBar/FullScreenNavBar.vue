@@ -19,7 +19,7 @@
                         </button>
                     </div>
                 </div>
-                <user-card :user="user"/>
+                <user-card :user="user" @updatePhoto="updatePhoto"/>
             </nav>
         </div>
     </div>
@@ -41,6 +41,9 @@
         methods: {
             changeAutoMenuShow() {
                 this.$store.commit('changeAutoMenuShow');
+            },
+            updatePhoto(photo){
+                this.user.photo = photo;
             }
         },
         mounted() {

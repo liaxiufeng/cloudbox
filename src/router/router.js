@@ -9,7 +9,7 @@ Vue.use(VueRouter);
 // 解决编程式路由往同─地址到跳转时会报错的情况
 
 //push
-VueRouter.prototype.powerPush = location => VueRouter.prototype.push(location).catch(err => document.location = location);
+// VueRouter.prototype.powerPush = location => VueRouter.prototype.push(location).catch(err => err.log);
 
 // replace
 VueRouter.prototype.powerReplace = location => {
